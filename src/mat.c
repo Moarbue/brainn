@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-Mat  mat_alloc(size_t rows, size_t cols)
+Mat mat_alloc(size_t rows, size_t cols)
 {
     Mat m;
 

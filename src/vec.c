@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-Vec  vec_alloc(size_t elements)
+Vec vec_alloc(size_t elements)
 {
     Vec v;
 
@@ -68,7 +68,7 @@ void vec_print_intern(Vec v, const char *name, size_t pad)
 
     printf("%*s%s = [\n", (int) pad, "", name);
     for (size_t c = 0; c < v.c; c++) {
-        printf("%*s    %.3f\n", (int) pad, "", v.e[c]);
+        printf("%*s    %.3f\n", (int) pad, "", vec_el(v, c));
     }
     printf("%*s]\n", (int) pad, "");
 }
