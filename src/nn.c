@@ -24,6 +24,9 @@ NN nn_alloc(size_t *arch, size_t layers)
         nn.w[i]   = mat_alloc(arch[i], arch[i+1]);
     }
 
+    nn.haf = ReLU;
+    nn.oaf = softmax;
+
     return nn;
 }
 
@@ -48,6 +51,21 @@ void nn_fill(NN nn, size_t val)
         vec_fill(nn.a[i+1], val);
         vec_fill(nn.b[i],   val);
         mat_fill(nn.w[i],   val);
+    }
+}
+
+void nn_forward(NN nn)
+{
+    assert(nn.a != NULL && nn.b != NULL && nn.w != NULL && "No memory for layers allocated");
+
+    for (size_t i = 0; i < nn.l; i++) {
+        vec_mat_mul(nn.a[i+1], nn.a[i], nn.w[i]);
+        vec_sum(nn.a[i+1], nn.b[i]);
+        
+        if (i < (nn.l - 1))
+            (*nn.haf)(nn.a[i+1]);
+        else
+            (*nn.oaf)(nn.a[i+1]);
     }
 }
 

@@ -2,6 +2,7 @@
 
 #include "vec.h"
 #include "mat.h"
+#include "activation.h"
 
 #ifndef BRAINN_NN_H_
 #define BRAINN_NN_H_
@@ -14,11 +15,15 @@ typedef struct {
     Vec *a;     // activations
     Vec *b;     // biases
     Mat *w;     // weights
+
+    hidden_activation_function *haf;
+    output_activation_function *oaf;
 } NN;
 
 NN   nn_alloc(size_t *arch, size_t layers);
 void nn_init(NN nn, float min, float max);
 void nn_fill(NN nn, size_t val);
+void nn_forward(NN nn);
 void nn_free(NN nn);
 
 void nn_print_intern(NN nn, const char *name);
