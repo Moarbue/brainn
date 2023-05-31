@@ -1,6 +1,7 @@
 #include "../include/vec.h"
 
 #include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 Vec  vec_alloc(size_t elements)
@@ -58,4 +59,16 @@ void vec_sum(Vec dst, Vec v)
 void vec_free(Vec v)
 {
     free(v.e);
+}
+
+
+void vec_print_intern(Vec v, const char *name, size_t pad)
+{
+    assert(v.e != NULL && "No memory for elements allocated!");
+
+    printf("%*s%s = [\n", (int) pad, "", name);
+    for (size_t c = 0; c < v.c; c++) {
+        printf("%*s    %.3f\n", (int) pad, "", v.e[c]);
+    }
+    printf("%*s]\n", (int) pad, "");
 }
