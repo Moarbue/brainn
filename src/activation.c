@@ -4,12 +4,21 @@
 #include <math.h>
 #include <stddef.h>
 
-void sigmoid(Vec v)
+void Sigmoid(Vec v)
 {
     assert(v.e != NULL && "No memory for elements allocated!");
 
     for (size_t i = 0; i < v.c; i++) {
         vec_el(v, i) = 1.f / (1.f + expf(-vec_el(v, i)));
+    }
+}
+
+void Tanh(Vec v)
+{
+    assert(v.e != NULL && "No memory for elements allocated!");
+
+    for (size_t i = 0; i < v.c; i++) {
+        vec_el(v, i) = tanhf(vec_el(v, i));
     }
 }
 
@@ -22,7 +31,7 @@ void ReLU(Vec v)
     }
 }
 
-void softmax(Vec v)
+void Softmax(Vec v)
 {
     assert(v.e != NULL && "No memory for elements allocated!");
 
