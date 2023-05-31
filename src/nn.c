@@ -84,6 +84,13 @@ void nn_free(NN nn)
 }
 
 
+void nn_set_activation_function(NN *nn, hidden_activation_function *haf, output_activation_function *oaf)
+{
+    nn->haf = haf;
+    nn->oaf = oaf;
+}
+
+
 void nn_print_intern(NN nn, const char *name)
 {
     assert(nn.a != NULL && nn.b != NULL && nn.w != NULL && "No memory for layers allocated");

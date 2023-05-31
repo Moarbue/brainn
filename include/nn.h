@@ -26,6 +26,8 @@ void nn_fill(NN nn, size_t val);
 void nn_forward(NN nn);
 void nn_free(NN nn);
 
+void nn_set_activation_function(NN *nn, hidden_activation_function *haf, output_activation_function *oaf);
+
 void nn_print_intern(NN nn, const char *name);
 
 #endif // BRAINN_NN_H_
