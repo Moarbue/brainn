@@ -11,13 +11,14 @@ typedef struct {
     float *e;   // elements
 } Vec;
 
-Vec  vec_alloc(size_t elements);
-void vec_fill(Vec v, float val);
-void vec_rand(Vec v, float min, float max);
-void vec_copy(Vec dst, Vec src);
-void vec_sum(Vec dst, Vec v);
-void vec_mat_mul(Vec dst, Vec v, Mat m);
-void vec_free(Vec v);
+Vec   vec_alloc(size_t elements);
+void  vec_fill(Vec v, float val);
+void  vec_rand(Vec v, float min, float max);
+void  vec_copy(Vec dst, Vec src);
+void  vec_sum(Vec dst, Vec v);
+float vec_max(Vec v);
+void  vec_mat_mul(Vec dst, Vec v, Mat m);
+void  vec_free(Vec v);
 
 void vec_print_intern(Vec v, const char *name, size_t pad);
 

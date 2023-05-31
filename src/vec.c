@@ -56,6 +56,18 @@ void vec_sum(Vec dst, Vec v)
     }
 }
 
+float vec_max(Vec v)
+{
+    assert(v.e != NULL && "No memory for elements allocated!");
+
+    float max = 0.f;
+    for (size_t i = 0; i < v.c; i++) {
+        if (vec_el(v, i) > max) max = vec_el(v, i);
+    }
+
+    return max;
+}
+
 void vec_mat_mul(Vec dst, Vec v, Mat m)
 {
     assert(dst.e != NULL && "No memory for elements of dst allocated!");
