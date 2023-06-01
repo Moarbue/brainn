@@ -10,6 +10,7 @@ Mat mat_alloc(size_t rows, size_t cols)
 
     m.r = rows;
     m.c = cols;
+    m.s = 1;
     m.e = (float *) malloc(sizeof (*m.e) * rows * cols);
 
     assert(m.e != NULL && "Failed to allocate memory for matrix!");
@@ -37,6 +38,22 @@ void mat_rand(Mat m, float min, float max)
             mat_el(m, r, c) = ((float) rand() / (float) RAND_MAX) * (max - min) + min;
         }
     }
+}
+
+Mat mat_sub_mat(Mat m, size_t rows, size_t cols, size_t row_offset, size_t col_offset)
+{
+    assert(m.r >= rows && "Sub-Matrix rows are out of bounds");
+    assert(m.c >= cols && "Sub-Matrix columns are out of bounds");
+    assert(m.r > row_offset && "row-offset is out of bounds");
+    assert(m.c > col_offset && "column-offset is out of bounds");
+
+    Mat dst;
+    dst.r = rows;
+    dst.c = cols;
+    dst.s = row_offset - 1;
+    dst.e = &mat_el(m, row_offset, col_offset);
+
+    return dst;
 }
 
 void mat_free(Mat m)
