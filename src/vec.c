@@ -9,7 +9,7 @@ Vec vec_alloc(size_t elements)
     Vec v;
 
     v.c = elements;
-    v.s = 0;
+    v.s = 1;
     v.e = (float *) malloc(sizeof (*v.e) * elements);
 
     assert(v.e != NULL && "Failed to allocate memory for vector!");

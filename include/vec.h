@@ -4,7 +4,7 @@
 #ifndef BRAINN_VEC_H_
 #define BRAINN_VEC_H_
 
-#define vec_el(v, i) (v).e[(i) + (i) * (v).s]
+#define vec_el(v, i) (v).e[(i) * (v).s]
 #define vec_print(v, pad) vec_print_intern(v, #v, pad)
 typedef struct {
     size_t c;   // element count
