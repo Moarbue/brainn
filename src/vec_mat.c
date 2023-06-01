@@ -24,7 +24,20 @@ Vec mat_to_row_vec(Mat m, size_t row)
 
     Vec dst;
     dst.c = m.c;
+    dst.s = 0;
     dst.e = &mat_el(m, row, 0);
+
+    return dst;
+}
+
+Vec mat_to_col_vec(Mat m, size_t col)
+{
+    assert(col < m.c && "Column index is outside matrix bounds");
+
+    Vec dst;
+    dst.c = m.r;
+    dst.s = m.c;
+    dst.e = &mat_el(m, 0, col);
 
     return dst;
 }
