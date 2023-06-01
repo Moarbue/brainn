@@ -12,7 +12,7 @@ typedef struct {
     float *e;   // elements
 } Vec;
 
-Vec   vec_alloc(size_t elements, size_t stride);
+Vec   vec_alloc(size_t elements);
 void  vec_fill(Vec v, float val);
 void  vec_rand(Vec v, float min, float max);
 void  vec_copy(Vec dst, Vec src);
