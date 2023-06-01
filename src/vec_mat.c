@@ -24,7 +24,7 @@ Vec mat_to_row_vec(Mat m, size_t row)
 
     Vec dst;
     dst.c = m.c;
-    dst.s = 0;
+    dst.s = 1;
     dst.e = &mat_el(m, row, 0);
 
     return dst;
