@@ -4,11 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-Vec vec_alloc(size_t elements)
+Vec   vec_alloc(size_t elements, size_t stride)
 {
     Vec v;
 
     v.c = elements;
+    v.s = stride;
     v.e = (float *) malloc(sizeof (*v.e) * elements);
 
     assert(v.e != NULL && "Failed to allocate memory for vector!");

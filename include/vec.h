@@ -4,14 +4,15 @@
 #ifndef BRAINN_VEC_H_
 #define BRAINN_VEC_H_
 
-#define vec_el(v, i) (v).e[(i)]
+#define vec_el(v, i) (v).e[(i) + (i) * (v).s]
 #define vec_print(v, pad) vec_print_intern(v, #v, pad)
 typedef struct {
     size_t c;   // element count
+    size_t s;   // stride
     float *e;   // elements
 } Vec;
 
-Vec   vec_alloc(size_t elements);
+Vec   vec_alloc(size_t elements, size_t stride);
 void  vec_fill(Vec v, float val);
 void  vec_rand(Vec v, float min, float max);
 void  vec_copy(Vec dst, Vec src);
