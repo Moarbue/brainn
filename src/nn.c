@@ -26,6 +26,7 @@ NN nn_alloc(size_t *arch, size_t layers)
 
     nn.haf = ReLU;
     nn.oaf = Softmax;
+    nn.lf  = CEL;
 
     return nn;
 }
@@ -88,6 +89,11 @@ void nn_set_activation_function(NN *nn, hidden_activation_function *haf, output_
 {
     nn->haf = haf;
     nn->oaf = oaf;
+}
+
+void nn_set_loss_functions(NN *nn, loss_function *lf)
+{
+    nn->lf = lf;
 }
 
 
