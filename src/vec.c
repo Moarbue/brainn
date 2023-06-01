@@ -68,22 +68,6 @@ float vec_max(Vec v)
     return max;
 }
 
-void vec_mat_mul(Vec dst, Vec v, Mat m)
-{
-    assert(dst.e != NULL && "No memory for elements of dst allocated!");
-    assert(v.e   != NULL && "No memory for elements of v allocated!");
-    assert(m.e   != NULL && "No memory for elements of m allocated!");
-
-    assert(v.c   == m.r);
-    assert(dst.c == m.c);
-
-    for (size_t r = 0; r < dst.c; r++) {
-        for (size_t c = 0; c < v.c; c++) {
-            vec_el(dst, r) += vec_el(v, c) * mat_el(m, c, r);
-        }
-    }
-}
-
 void vec_free(Vec v)
 {
     free(v.e);
