@@ -25,7 +25,7 @@ NN nn_alloc(size_t *arch, size_t layers)
     }
 
     nn.haf = ReLU;
-    nn.oaf = softmax;
+    nn.oaf = Softmax;
 
     return nn;
 }
