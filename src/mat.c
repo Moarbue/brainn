@@ -50,7 +50,7 @@ Mat mat_sub_mat(Mat m, size_t rows, size_t cols, size_t row_offset, size_t col_o
     Mat dst;
     dst.r = rows;
     dst.c = cols;
-    dst.s = row_offset - 1;
+    dst.s = m.c - cols;
     dst.e = &mat_el(m, row_offset, col_offset);
 
     return dst;
