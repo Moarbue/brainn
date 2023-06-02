@@ -1,4 +1,5 @@
 #include "../include/nn.h"
+#include "../include/vec_mat.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -55,7 +56,7 @@ void nn_fill(NN nn, size_t val)
     }
 }
 
-void nn_forward(NN nn)
+Vec nn_forward(NN nn)
 {
     assert(nn.a != NULL && nn.b != NULL && nn.w != NULL && "No memory for layers allocated");
 
@@ -68,6 +69,32 @@ void nn_forward(NN nn)
         else
             (*nn.oaf)(nn.a[i+1]);
     }
+    
+    return nn_output(nn);
+}
+
+float nn_epoch_loss(NN nn, Mat training_inputs, Mat expected_outputs)
+{
+    assert(nn_input(nn).c    == training_inputs.c  && "Training data input matrix has wrong dimensions");
+    assert(nn_output(nn).c   == expected_outputs.c && "Expected output matrix has wrong dimensions");
+    assert(training_inputs.r == expected_outputs.r && "Training data input matrix and expected output matrix don't have the same dimensions");
+
+    size_t samples = training_inputs.r;
+    float cost = 0.f;
+    for (size_t i = 0; i < samples; i++) {
+        Vec input, output;
+        input  = mat_to_row_vec(training_inputs,  i);
+        output = mat_to_row_vec(expected_outputs, i);
+
+        vec_copy(nn_input(nn), input);
+        nn_forward(nn);
+        for (size_t j = 0; j < nn_output(nn).c; j++) {
+            cost += (*nn.lf)(vec_el(output, j), vec_el(nn_output(nn), j));
+        }
+    }
+    cost /= (float) samples;
+
+    return cost;
 }
 
 void nn_free(NN nn)

@@ -22,11 +22,12 @@ typedef struct {
     loss_function *lf;
 } NN;
 
-NN   nn_alloc(size_t *arch, size_t layers);
-void nn_init(NN nn, float min, float max);
-void nn_fill(NN nn, size_t val);
-void nn_forward(NN nn);
-void nn_free(NN nn);
+NN    nn_alloc(size_t *arch, size_t layers);
+void  nn_init(NN nn, float min, float max);
+void  nn_fill(NN nn, size_t val);
+Vec   nn_forward(NN nn);
+float nn_epoch_loss(NN nn, Mat training_inputs, Mat expected_outputs);
+void  nn_free(NN nn);
 
 void nn_set_activation_function(NN *nn, hidden_activation_function *haf, output_activation_function *oaf);
 void nn_set_loss_functions(NN *nn, loss_function *lf);
