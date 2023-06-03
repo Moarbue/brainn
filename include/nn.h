@@ -20,6 +20,7 @@ typedef struct {
     hidden_activation_function *haf;
     output_activation_function *oaf;
     loss_function *lf;
+    dloss_function *dlf;
 } NN;
 
 NN    nn_alloc(size_t *arch, size_t layers);
@@ -30,7 +31,7 @@ float nn_loss(NN nn, Mat training_inputs, Mat expected_outputs);
 void  nn_free(NN nn);
 
 void nn_set_activation_function(NN *nn, hidden_activation_function *haf, output_activation_function *oaf);
-void nn_set_loss_functions(NN *nn, loss_function *lf);
+void nn_set_loss_functions(NN *nn, loss_function *lf, dloss_function *dlf);
 
 void nn_print_intern(NN nn, const char *name);
 

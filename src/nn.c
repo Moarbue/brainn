@@ -118,9 +118,10 @@ void nn_set_activation_function(NN *nn, hidden_activation_function *haf, output_
     nn->oaf = oaf;
 }
 
-void nn_set_loss_functions(NN *nn, loss_function *lf)
+void nn_set_loss_functions(NN *nn, loss_function *lf, dloss_function *dlf)
 {
     nn->lf = lf;
+    nn->dlf = dlf;
 }
 
 
