@@ -73,7 +73,7 @@ Vec nn_forward(NN nn)
     return nn_output(nn);
 }
 
-float nn_epoch_loss(NN nn, Mat training_inputs, Mat expected_outputs)
+float nn_loss(NN nn, Mat training_inputs, Mat expected_outputs)
 {
     assert(nn_input(nn).c    == training_inputs.c  && "Training data input matrix has wrong dimensions");
     assert(nn_output(nn).c   == expected_outputs.c && "Expected output matrix has wrong dimensions");
