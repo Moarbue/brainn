@@ -4,45 +4,94 @@
 #include <math.h>
 #include <stddef.h>
 
-void Sigmoid(Vec v)
+float Sigmoid(float x)
 {
-    assert(v.e != NULL && "No memory for elements allocated!");
-
-    for (size_t i = 0; i < v.c; i++) {
-        vec_el(v, i) = 1.f / (1.f + expf(-vec_el(v, i)));
-    }
+    return 1.f / (1.f + expf(-x));
 }
 
-void Tanh(Vec v)
+float Tanh(float x)
 {
-    assert(v.e != NULL && "No memory for elements allocated!");
-
-    for (size_t i = 0; i < v.c; i++) {
-        vec_el(v, i) = tanhf(vec_el(v, i));
-    }
+    return tanhf(x);
 }
 
-void ReLU(Vec v)
+float ReLU(float x)
 {
-    assert(v.e != NULL && "No memory for elements allocated!");
-
-    for (size_t i = 0; i < v.c; i++) {
-        vec_el(v, i) = fmax(0, vec_el(v, i));
-    }
+    return fmaxf(0, x);
 }
 
-void Softmax(Vec v)
+float Heaviside(float x)
 {
-    assert(v.e != NULL && "No memory for elements allocated!");
+    return (x > 0);
+}
 
-    float sum = 0.f;
-    float max = vec_max(v);
-    for (size_t i = 0; i < v.c; i++) {
-        vec_el(v, i) = expf(vec_el(v, i) - max);
-        sum += vec_el(v, i);
-    }
+float GELU(float x)
+{
+    static const float SQRT2 = 1.41421356237f;
 
+    return 0.5f * x * (1 + erff(x / SQRT2));
+}
+
+float Softplus(float x)
+{
+    return logf(1 + expf(x));
+}
+
+float lRELU(float x)
+{
+    if (x < 0) return 0.01f * x;
+
+    return x;
+}
+
+
+float dSigmoid(float x)
+{
+    float y = Sigmoid(x);
+
+    return y * (1 - y);
+}
+
+float dTanh(float x)
+{
+    float y = Tanh(x);
+
+    return 1 - y*y;
+}
+
+float dReLU(float x)
+{
+    return (x > 0);
+}
+
+float dHeaviside(float x)
+{
+    (void) x;
+    return 0;
+}
+
+float dGELU(float x)
+{
+    static const float SQRTPI = 1.77245385091f;
+
+    return 2.f / SQRTPI * expf(-x*x);
+}
+
+float dSoftplus(float x)
+{
+    return Sigmoid(x);
+}
+
+float dlRELU(float x)
+{
+    if (x < 0) return 0.01f;
+
+    return 1;
+}
+
+
+void vec_activate(Vec v, activation_function *af)
+{
     for (size_t i = 0; i < v.c; i++) {
-        vec_el(v, i) /= sum;
+        vec_el(v, i) = (*af)(vec_el(v, i));
     }
 }
