@@ -56,10 +56,11 @@ void nn_fill(NN nn, size_t val)
     }
 }
 
-Vec nn_forward(NN nn)
+Vec nn_forward(NN nn, Vec input)
 {
     assert(nn.a != NULL && nn.b != NULL && nn.w != NULL && "No memory for layers allocated");
 
+    vec_copy(nn_input(nn), input);
     for (size_t i = 0; i < nn.l; i++) {
         vec_mat_mul(nn.a[i+1], nn.a[i], nn.w[i]);
         vec_sum(nn.a[i+1], nn.b[i]);
@@ -86,8 +87,7 @@ float nn_loss(NN nn, Mat training_inputs, Mat expected_outputs)
         input  = mat_to_row_vec(training_inputs,  i);
         output = mat_to_row_vec(expected_outputs, i);
 
-        vec_copy(nn_input(nn), input);
-        nn_forward(nn);
+        nn_forward(nn, input);
         for (size_t j = 0; j < nn_output(nn).c; j++) {
             cost += (*nn.lf)(vec_el(output, j), vec_el(nn_output(nn), j));
         }
