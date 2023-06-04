@@ -17,8 +17,10 @@ typedef struct {
     Vec *b;     // biases
     Mat *w;     // weights
 
-    hidden_activation_function *haf;
-    output_activation_function *oaf;
+    hidden_activation_function  *haf;
+    dhidden_activation_function *dhaf;
+    output_activation_function  *oaf;
+    doutput_activation_function *doaf;
     loss_function *lf;
     dloss_function *dlf;
 } NN;
@@ -30,7 +32,8 @@ Vec   nn_forward(NN nn, Vec input);
 float nn_loss(NN nn, Mat training_inputs, Mat expected_outputs);
 void  nn_free(NN nn);
 
-void nn_set_activation_function(NN *nn, hidden_activation_function *haf, output_activation_function *oaf);
+void nn_set_activation_function(NN *nn, hidden_activation_function *haf, dhidden_activation_function *dhaf,
+                                        output_activation_function *oaf, doutput_activation_function *doaf);
 void nn_set_loss_functions(NN *nn, loss_function *lf, dloss_function *dlf);
 
 void nn_print_intern(NN nn, const char *name);

@@ -25,9 +25,12 @@ NN nn_alloc(size_t *arch, size_t layers)
         nn.w[i]   = mat_alloc(arch[i], arch[i+1]);
     }
 
-    nn.haf = ReLU;
-    nn.oaf = Softmax;
-    nn.lf  = CEL;
+    nn.haf  = ReLU;
+    nn.dhaf = dReLU;
+    nn.oaf  = Sigmoid;
+    nn.doaf = dSigmoid;
+    nn.lf   = CEL;
+    nn.dlf  = dCEL;
 
     return nn;
 }
@@ -66,9 +69,9 @@ Vec nn_forward(NN nn, Vec input)
         vec_sum(nn.a[i+1], nn.b[i]);
         
         if (i < (nn.l - 1))
-            (*nn.haf)(nn.a[i+1]);
+            vec_activate(nn.a[i+1], nn.haf);
         else
-            (*nn.oaf)(nn.a[i+1]);
+            vec_activate(nn.a[i+1], nn.oaf);
     }
     
     return nn_output(nn);
@@ -112,10 +115,13 @@ void nn_free(NN nn)
 }
 
 
-void nn_set_activation_function(NN *nn, hidden_activation_function *haf, output_activation_function *oaf)
+void nn_set_activation_function(NN *nn, hidden_activation_function *haf, dhidden_activation_function *dhaf,
+                                        output_activation_function *oaf, doutput_activation_function *doaf)
 {
-    nn->haf = haf;
-    nn->oaf = oaf;
+    nn->haf  = haf;
+    nn->dhaf = dhaf;
+    nn->oaf  = oaf;
+    nn->doaf = doaf;
 }
 
 void nn_set_loss_functions(NN *nn, loss_function *lf, dloss_function *dlf)
