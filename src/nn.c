@@ -15,11 +15,13 @@ NN nn_alloc(size_t *arch, size_t layers)
     nn.a  = (Vec *) malloc(sizeof (*nn.a)  * layers);
     nn.b  = (Vec *) malloc(sizeof (*nn.b)  * nn.l);
     nn.w  = (Mat *) malloc(sizeof (*nn.w)  * nn.l);
+    nn.da = (Vec *) malloc(sizeof (*nn.da) * nn.l);
     nn.ga = (Vec *) malloc(sizeof (*nn.ga) * layers);
     nn.gb = (Vec *) malloc(sizeof (*nn.gb) * nn.l);
     nn.gw = (Mat *) malloc(sizeof (*nn.gw) * nn.l);
 
     assert(nn.a  != NULL && nn.b  != NULL && nn.w  != NULL && "Failed to allocate memory for network");
+    assert(nn.da != NULL && "Failed to allocate memory for network");
     assert(nn.ga != NULL && nn.gb != NULL && nn.gw != NULL && "Failed to allocate memory for network");
 
     nn.a [0] = vec_alloc(arch[0]);
@@ -28,6 +30,7 @@ NN nn_alloc(size_t *arch, size_t layers)
         nn.a[i+1]  = vec_alloc(arch[i+1]);
         nn.b[i]    = vec_alloc(arch[i+1]);
         nn.w[i]    = mat_alloc(arch[i], arch[i+1]);
+        nn.da[i]   = vec_alloc(arch[i+1]);
         nn.ga[i+1] = vec_alloc(arch[i+1]);
         nn.gb[i]   = vec_alloc(arch[i+1]);
         nn.gw[i]   = mat_alloc(arch[i], arch[i+1]);
@@ -46,6 +49,7 @@ NN nn_alloc(size_t *arch, size_t layers)
 void nn_init(NN nn, float min, float max)
 {
     assert(nn.a  != NULL && nn.b  != NULL && nn.w  != NULL && "Failed to allocate memory for network");
+    assert(nn.da != NULL && "Failed to allocate memory for network");
     assert(nn.ga != NULL && nn.gb != NULL && nn.gw != NULL && "Failed to allocate memory for network");
 
     vec_fill(nn.a [0], 0);
@@ -54,6 +58,7 @@ void nn_init(NN nn, float min, float max)
         vec_fill(nn.a [i+1], 0);
         vec_fill(nn.b [i],   0);
         mat_rand(nn.w [i], min, max);
+        vec_fill(nn.da[i],   0);
         vec_fill(nn.ga[i+1], 0);
         vec_fill(nn.gb[i],   0);
         mat_fill(nn.gw[i],   0);
@@ -63,6 +68,7 @@ void nn_init(NN nn, float min, float max)
 void nn_fill(NN nn, size_t val)
 {
     assert(nn.a  != NULL && nn.b  != NULL && nn.w  != NULL && "Failed to allocate memory for network");
+    assert(nn.da != NULL && "Failed to allocate memory for network");
     assert(nn.ga != NULL && nn.gb != NULL && nn.gw != NULL && "Failed to allocate memory for network");
 
     vec_fill(nn.a [0], 0);
@@ -71,6 +77,7 @@ void nn_fill(NN nn, size_t val)
         vec_fill(nn.a [i+1], val);
         vec_fill(nn.b [i],   val);
         mat_fill(nn.w [i],   val);
+        vec_fill(nn.da[i],   val);
         vec_fill(nn.ga[i+1], val);
         vec_fill(nn.gb[i],   val);
         mat_fill(nn.gw[i],   val);
@@ -80,12 +87,14 @@ void nn_fill(NN nn, size_t val)
 Vec nn_forward(NN nn, Vec input)
 {
     assert(nn.a  != NULL && nn.b  != NULL && nn.w  != NULL && "Failed to allocate memory for network");
+    assert(nn.da != NULL && "Failed to allocate memory for network");
     assert(nn.ga != NULL && nn.gb != NULL && nn.gw != NULL && "Failed to allocate memory for network");
 
     vec_copy(nn_input(nn), input);
     for (size_t i = 0; i < nn.l; i++) {
         vec_mat_mul(nn.a[i+1], nn.a[i], nn.w[i]);
         vec_sum(nn.a[i+1], nn.b[i]);
+        vec_copy(nn.da[i], nn.a[i+1]);
         
         if (i < (nn.l - 1))
             vec_activate(nn.a[i+1], nn.haf);
@@ -98,6 +107,46 @@ Vec nn_forward(NN nn, Vec input)
 
 void nn_backpropagate(NN nn, Vec output)
 {
+    assert(nn.a  != NULL && nn.b  != NULL && nn.w  != NULL && "Failed to allocate memory for network");
+    assert(nn.da != NULL && "Failed to allocate memory for network");
+    assert(nn.ga != NULL && nn.gb != NULL && nn.gw != NULL && "Failed to allocate memory for network");
+    assert(nn_output(nn).c == output.c && "Network output and expected output have wrong dimensions");
+
+    size_t lc, nc, pnc;
+    
+    // clear previous activation gradients
+    lc = nn.l;
+    for (size_t l = 0; l < lc; l++) {
+        vec_fill(nn.ga[l], 0);
+    }
+
+    // kickoff backpropagation by calculating the derivative of the loss function
+    nc = nn_output(nn).c;
+    for (size_t n = 0; n < nc; n++) {
+        vec_el(nn.ga[lc], n) = (*nn.lf)(vec_el(output, n), vec_el(nn_output(nn), n));
+    }
+
+    // traverse network backwards
+    for (size_t l = lc; l > 0; l--) {
+        nc = nn.a[l].c;
+
+        // for each neuron n in current layer
+        for (size_t n = 0; n < nc; n++) {
+            float dact = (*nn.dhaf)(vec_el(nn.da[l-1], n));
+            float daa  = vec_el(nn.ga[l], n);
+            vec_el(nn.gb[l-1], n) += daa * dact;
+
+            // for each neuron p in the previous layer
+            pnc = nn.a[l-1].c;
+            for (size_t p = 0; p < pnc; p++) {
+                float pa = vec_el(nn.a[l-1], p);
+                float  w = mat_el(nn.w[l-1], p, n);
+
+                vec_el(nn.ga[l-1], p)    += daa * dact * w;
+                mat_el(nn.gw[l-1], p, n) += daa * dact * pa;
+            }
+        }
+    }
 
 }
 
@@ -165,7 +214,6 @@ void nn_set_loss_functions(NN *nn, loss_function *lf, dloss_function *dlf)
 void nn_print_intern(NN nn, const char *name)
 {
     assert(nn.a  != NULL && nn.b  != NULL && nn.w  != NULL && "Failed to allocate memory for network");
-    assert(nn.ga != NULL && nn.gb != NULL && nn.gw != NULL && "Failed to allocate memory for network");
 
     char buf[32];
     printf("%s = [\n", name);

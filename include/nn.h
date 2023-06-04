@@ -17,6 +17,7 @@ typedef struct {
     Vec *b;     // biases
     Mat *w;     // weights
 
+    Vec *da;    // activations before applying activation function
     Vec *ga;    // activation gradients
     Vec *gb;    // bias gradients
     Mat *gw;    // weight gradients
