@@ -17,6 +17,10 @@ typedef struct {
     Vec *b;     // biases
     Mat *w;     // weights
 
+    Vec *ga;    // activation gradients
+    Vec *gb;    // bias gradients
+    Mat *gw;    // weight gradients
+
     hidden_activation_function  *haf;
     dhidden_activation_function *dhaf;
     output_activation_function  *oaf;
@@ -29,6 +33,7 @@ NN    nn_alloc(size_t *arch, size_t layers);
 void  nn_init(NN nn, float min, float max);
 void  nn_fill(NN nn, size_t val);
 Vec   nn_forward(NN nn, Vec input);
+void  nn_backpropagate(NN nn, Vec output);
 float nn_loss(NN nn, Mat training_inputs, Mat expected_outputs);
 void  nn_free(NN nn);
 
