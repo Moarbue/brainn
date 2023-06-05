@@ -249,4 +249,5 @@ void nn_print_intern(NN nn, const char *name)
         snprintf(buf, sizeof (buf), "b[%zu]", i);
         vec_print_intern(nn.b[i], buf, 4);
     }
+    printf("]\n");
 }
