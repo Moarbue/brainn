@@ -206,6 +206,7 @@ void nn_free(NN nn)
         vec_free(nn.a [i+1]);
         vec_free(nn.b [i]);
         mat_free(nn.w [i]);
+        vec_free(nn.da[i]);
         vec_free(nn.ga[i+1]);
         vec_free(nn.gb[i]);
         mat_free(nn.gw[i]);
