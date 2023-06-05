@@ -19,6 +19,7 @@ NN nn_alloc(size_t *arch, size_t layers)
     nn.ga = (Vec *) malloc(sizeof (*nn.ga) * layers);
     nn.gb = (Vec *) malloc(sizeof (*nn.gb) * nn.l);
     nn.gw = (Mat *) malloc(sizeof (*nn.gw) * nn.l);
+    nn.gc = (size_t *) malloc(sizeof(*nn.gc));
 
     assert(nn.a  != NULL && nn.b  != NULL && nn.w  != NULL && "Failed to allocate memory for network");
     assert(nn.da != NULL && "Failed to allocate memory for network");
@@ -35,6 +36,7 @@ NN nn_alloc(size_t *arch, size_t layers)
         nn.gb[i]   = vec_alloc(arch[i+1]);
         nn.gw[i]   = mat_alloc(arch[i], arch[i+1]);
     }
+    *nn.gc = 0;
 
     nn.haf  = ReLU;
     nn.dhaf = dReLU;
@@ -123,7 +125,7 @@ void nn_backpropagate(NN nn, Vec output)
     // kickoff backpropagation by calculating the derivative of the loss function
     nc = nn_output(nn).c;
     for (size_t n = 0; n < nc; n++) {
-        vec_el(nn.ga[lc], n) = (*nn.lf)(vec_el(output, n), vec_el(nn_output(nn), n));
+        vec_el(nn.ga[lc], n) = (*nn.dlf)(vec_el(output, n), vec_el(nn_output(nn), n));
     }
 
     // traverse network backwards
@@ -132,7 +134,7 @@ void nn_backpropagate(NN nn, Vec output)
 
         // for each neuron n in current layer
         for (size_t n = 0; n < nc; n++) {
-            float dact = (*nn.dhaf)(vec_el(nn.da[l-1], n));
+            float dact = (l == lc) ? (*nn.doaf)(vec_el(nn.da[l-1], n)) : (*nn.dhaf)(vec_el(nn.da[l-1], n));
             float daa  = vec_el(nn.ga[l], n);
             vec_el(nn.gb[l-1], n) += daa * dact;
 
@@ -147,7 +149,30 @@ void nn_backpropagate(NN nn, Vec output)
             }
         }
     }
+    (*nn.gc)++;
+}
 
+void nn_evolve(NN nn, float learning_rate)
+{
+    assert(nn.a  != NULL && nn.b  != NULL && nn.w  != NULL && "Failed to allocate memory for network");
+    assert(nn.ga != NULL && nn.gb != NULL && nn.gw != NULL && "Failed to allocate memory for network");
+
+    size_t lc, nc, pnc;
+
+    lc = nn.l;
+    for (size_t l = 0; l < lc; l++) {
+        nc = nn.w[l].c;
+        for (size_t n = 0; n < nc; n++) {
+            vec_el(nn.b[l], n) -= vec_el(nn.gb[l], n) / *nn.gc * learning_rate;
+            pnc = nn.w[l].r;
+            for (size_t p = 0; p < pnc; p++) {
+                mat_el(nn.w[l], p, n) -= mat_el(nn.gw[l], p, n) / *nn.gc * learning_rate;
+            }
+        }
+        *nn.gc = 0;
+        vec_fill(nn.gb[l], 0);
+        mat_fill(nn.gw[l], 0);
+    }
 }
 
 float nn_loss(NN nn, Mat training_inputs, Mat expected_outputs)
@@ -192,6 +217,7 @@ void nn_free(NN nn)
     free(nn.ga);
     free(nn.gb);
     free(nn.gw);
+    free(nn.gc);
 }
 
 

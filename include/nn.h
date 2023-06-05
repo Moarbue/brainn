@@ -21,6 +21,7 @@ typedef struct {
     Vec *ga;    // activation gradients
     Vec *gb;    // bias gradients
     Mat *gw;    // weight gradients
+    size_t *gc;
 
     hidden_activation_function  *haf;
     dhidden_activation_function *dhaf;
@@ -35,6 +36,7 @@ void  nn_init(NN nn, float min, float max);
 void  nn_fill(NN nn, size_t val);
 Vec   nn_forward(NN nn, Vec input);
 void  nn_backpropagate(NN nn, Vec output);
+void  nn_evolve(NN nn, float learning_rate);
 float nn_loss(NN nn, Mat training_inputs, Mat expected_outputs);
 void  nn_free(NN nn);
 
