@@ -20,6 +20,7 @@ NN nn_alloc(size_t *arch, size_t layers)
     nn.gb = (Vec *) malloc(sizeof (*nn.gb) * nn.l);
     nn.gw = (Mat *) malloc(sizeof (*nn.gw) * nn.l);
     nn.gc = (size_t *) malloc(sizeof(*nn.gc));
+    nn.o  = (Optimizer *) malloc(sizeof (*nn.o));
 
     assert(nn.a  != NULL && nn.b  != NULL && nn.w  != NULL && "Failed to allocate memory for network");
     assert(nn.da != NULL && "Failed to allocate memory for network");
@@ -44,6 +45,8 @@ NN nn_alloc(size_t *arch, size_t layers)
     nn.doaf = dSigmoid;
     nn.lf   = CEL;
     nn.dlf  = dCEL;
+
+    *nn.o = optimizer_sdg_init(1);
 
     return nn;
 }
@@ -152,7 +155,7 @@ void nn_backpropagate(NN nn, Vec output)
     (*nn.gc)++;
 }
 
-void nn_evolve(NN nn, float learning_rate)
+void nn_evolve(NN nn)
 {
     assert(nn.a  != NULL && nn.b  != NULL && nn.w  != NULL && "Failed to allocate memory for network");
     assert(nn.ga != NULL && nn.gb != NULL && nn.gw != NULL && "Failed to allocate memory for network");
@@ -163,10 +166,10 @@ void nn_evolve(NN nn, float learning_rate)
     for (size_t l = 0; l < lc; l++) {
         nc = nn.w[l].c;
         for (size_t n = 0; n < nc; n++) {
-            vec_el(nn.b[l], n) -= vec_el(nn.gb[l], n) / *nn.gc * learning_rate;
+            vec_el(nn.b[l], n) -= vec_el(nn.gb[l], n) / *nn.gc * optimizer_update_param(nn.o, l, n, 0);
             pnc = nn.w[l].r;
             for (size_t p = 0; p < pnc; p++) {
-                mat_el(nn.w[l], p, n) -= mat_el(nn.gw[l], p, n) / *nn.gc * learning_rate;
+                mat_el(nn.w[l], p, n) -= mat_el(nn.gw[l], p, n) / *nn.gc * optimizer_update_param(nn.o, l, n, p);
             }
         }
         *nn.gc = 0;
@@ -219,6 +222,7 @@ void nn_free(NN nn)
     free(nn.gb);
     free(nn.gw);
     free(nn.gc);
+    free(nn.o);
 }
 
 
@@ -235,6 +239,11 @@ void nn_set_loss_functions(NN *nn, loss_function *lf, dloss_function *dlf)
 {
     nn->lf = lf;
     nn->dlf = dlf;
+}
+
+void nn_set_optimizer(NN nn, Optimizer o)
+{
+    *nn.o = o;
 }
 
 

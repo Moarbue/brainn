@@ -4,6 +4,7 @@
 #include "mat.h"
 #include "activation.h"
 #include "loss.h"
+#include "optimizer.h"
 
 #ifndef BRAINN_NN_H_
 #define BRAINN_NN_H_
@@ -23,6 +24,8 @@ typedef struct {
     Mat *gw;    // weight gradients
     size_t *gc;
 
+    Optimizer *o;
+
     hidden_activation_function  *haf;
     dhidden_activation_function *dhaf;
     output_activation_function  *oaf;
@@ -36,13 +39,14 @@ void  nn_init(NN nn, float min, float max);
 void  nn_fill(NN nn, size_t val);
 Vec   nn_forward(NN nn, Vec input);
 void  nn_backpropagate(NN nn, Vec output);
-void  nn_evolve(NN nn, float learning_rate);
+void nn_evolve(NN nn);
 float nn_loss(NN nn, Mat training_inputs, Mat expected_outputs);
 void  nn_free(NN nn);
 
 void nn_set_activation_function(NN *nn, hidden_activation_function *haf, dhidden_activation_function *dhaf,
                                         output_activation_function *oaf, doutput_activation_function *doaf);
 void nn_set_loss_functions(NN *nn, loss_function *lf, dloss_function *dlf);
+void nn_set_optimizer(NN nn, Optimizer o);
 
 void nn_print_intern(NN nn, const char *name);
 
