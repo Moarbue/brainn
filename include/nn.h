@@ -39,7 +39,7 @@ void  nn_init(NN nn, float min, float max);
 void  nn_fill(NN nn, size_t val);
 Vec   nn_forward(NN nn, Vec input);
 void  nn_backpropagate(NN nn, Vec output);
-void nn_evolve(NN nn);
+void  nn_evolve(NN nn);
 float nn_loss(NN nn, Mat training_inputs, Mat expected_outputs);
 void  nn_free(NN nn);
 
