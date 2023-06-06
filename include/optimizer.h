@@ -1,6 +1,8 @@
 #include "vec.h"
 #include "mat.h"
 
+#include <stdint.h>
+
 #ifndef BRAINN_OPTIMIZER_H_
 #define BRAINN_OPTIMIZER_H_
 
@@ -29,6 +31,7 @@ typedef struct {
 
 Optimizer optimizer_sdg_init (float learning_rate);
 Optimizer optimizer_sdgd_init(float learning_rate, float decay);
-float optimizer_update_param(Optimizer *o, size_t current_layer, size_t current_neuron, size_t previous_neuron);
+float optimizer_update_bias(Optimizer *o, size_t current_layer, size_t current_neuron);
+float optimizer_update_weight(Optimizer *o, size_t current_layer, size_t current_neuron, size_t previous_neuron);
 
 #endif // BRAINN_OPTIMIZER_H_
