@@ -159,6 +159,7 @@ void nn_evolve(NN nn)
 {
     assert(nn.a  != NULL && nn.b  != NULL && nn.w  != NULL && "Failed to allocate memory for network");
     assert(nn.ga != NULL && nn.gb != NULL && nn.gw != NULL && "Failed to allocate memory for network");
+    assert(*nn.gc != 0 && "Please backpropagate network before evolving");
 
     size_t lc, nc, pnc;
 
@@ -166,16 +167,16 @@ void nn_evolve(NN nn)
     for (size_t l = 0; l < lc; l++) {
         nc = nn.w[l].c;
         for (size_t n = 0; n < nc; n++) {
-            vec_el(nn.b[l], n) -= vec_el(nn.gb[l], n) / *nn.gc * optimizer_update_param(nn.o, l, n, 0);
+            vec_el(nn.b[l], n) -= vec_el(nn.gb[l], n) / *nn.gc * optimizer_update_bias(nn.o, l, n);
             pnc = nn.w[l].r;
             for (size_t p = 0; p < pnc; p++) {
-                mat_el(nn.w[l], p, n) -= mat_el(nn.gw[l], p, n) / *nn.gc * optimizer_update_param(nn.o, l, n, p);
+                mat_el(nn.w[l], p, n) -= mat_el(nn.gw[l], p, n) / *nn.gc * optimizer_update_weight(nn.o, l, n, p);
             }
         }
-        *nn.gc = 0;
         vec_fill(nn.gb[l], 0);
         mat_fill(nn.gw[l], 0);
     }
+    *nn.gc = 0;
 }
 
 float nn_loss(NN nn, Mat training_inputs, Mat expected_outputs)
