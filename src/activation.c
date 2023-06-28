@@ -36,7 +36,7 @@ float Softplus(float x)
     return logf(1 + expf(x));
 }
 
-float lRELU(float x)
+float lReLU(float x)
 {
     if (x < 0) return 0.01f * x;
 
@@ -81,7 +81,7 @@ float dSoftplus(float x)
     return Sigmoid(x);
 }
 
-float dlRELU(float x)
+float dlReLU(float x)
 {
     if (x < 0) return 0.01f;
 

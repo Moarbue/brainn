@@ -15,7 +15,7 @@ float ReLU(float x);
 float Heaviside(float x);
 float GELU(float x);
 float Softplus(float x);
-float lRELU(float x);
+float lReLU(float x);
 
 float dSigmoid(float x);
 float dTanh(float x);
@@ -23,7 +23,7 @@ float dReLU(float x);
 float dHeaviside(float x);
 float dGELU(float x);
 float dSoftplus(float x);
-float dlRELU(float x);
+float dlReLU(float x);
 
 void vec_activate(Vec v, activation_function *af);
 
