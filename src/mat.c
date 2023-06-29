@@ -10,7 +10,7 @@ Mat mat_alloc(size_t rows, size_t cols)
 
     m.r = rows;
     m.c = cols;
-    m.s = 1;
+    m.s = 0;
     m.e = (float *) malloc(sizeof (*m.e) * rows * cols);
 
     assert(m.e != NULL && "Failed to allocate memory for matrix!");
@@ -50,7 +50,7 @@ Mat mat_sub_mat(Mat m, size_t rows, size_t cols, size_t row_offset, size_t col_o
     Mat dst;
     dst.r = rows;
     dst.c = cols;
-    dst.s = m.c - cols;
+    dst.s = m.c - cols + m.s;
     dst.e = &mat_el(m, row_offset, col_offset);
 
     return dst;
