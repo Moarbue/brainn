@@ -25,6 +25,8 @@ NN nn_alloc(size_t *arch, size_t layers)
     assert(nn.a  != NULL && nn.b  != NULL && nn.w  != NULL && "Failed to allocate memory for network");
     assert(nn.da != NULL && "Failed to allocate memory for network");
     assert(nn.ga != NULL && nn.gb != NULL && nn.gw != NULL && "Failed to allocate memory for network");
+    assert(nn.gc != NULL && "Failed to allocate memory for network");
+    assert(nn.o  != NULL && "Failed to allocate memory for network");
 
     nn.a [0] = vec_alloc(arch[0]);
     nn.ga[0] = vec_alloc(arch[0]);
@@ -53,9 +55,7 @@ NN nn_alloc(size_t *arch, size_t layers)
 
 void nn_init(NN nn, float min, float max)
 {
-    assert(nn.a  != NULL && nn.b  != NULL && nn.w  != NULL && "Failed to allocate memory for network");
-    assert(nn.da != NULL && "Failed to allocate memory for network");
-    assert(nn.ga != NULL && nn.gb != NULL && nn.gw != NULL && "Failed to allocate memory for network");
+    assert(nn.gc != NULL && "Please call nn_alloc() before using this function!");
 
     vec_fill(nn.a [0], 0);
     vec_fill(nn.ga[0], 0);
@@ -72,9 +72,7 @@ void nn_init(NN nn, float min, float max)
 
 void nn_fill(NN nn, size_t val)
 {
-    assert(nn.a  != NULL && nn.b  != NULL && nn.w  != NULL && "Failed to allocate memory for network");
-    assert(nn.da != NULL && "Failed to allocate memory for network");
-    assert(nn.ga != NULL && nn.gb != NULL && nn.gw != NULL && "Failed to allocate memory for network");
+    assert(nn.gc != NULL && "Please call nn_alloc() before using this function!");
 
     vec_fill(nn.a [0], 0);
     vec_fill(nn.ga[0], 0);
@@ -91,9 +89,7 @@ void nn_fill(NN nn, size_t val)
 
 Vec nn_forward(NN nn, Vec input)
 {
-    assert(nn.a  != NULL && nn.b  != NULL && nn.w  != NULL && "Failed to allocate memory for network");
-    assert(nn.da != NULL && "Failed to allocate memory for network");
-    assert(nn.ga != NULL && nn.gb != NULL && nn.gw != NULL && "Failed to allocate memory for network");
+    assert(nn.gc != NULL && "Please call nn_alloc() before using this function!");
 
     vec_copy(nn_input(nn), input);
     for (size_t i = 0; i < nn.l; i++) {
@@ -101,10 +97,10 @@ Vec nn_forward(NN nn, Vec input)
         vec_sum(nn.a[i+1], nn.b[i]);
         vec_copy(nn.da[i], nn.a[i+1]);
         
-        if (i < (nn.l - 1))
-            vec_activate(nn.a[i+1], nn.haf);
-        else
+        if (i == (nn.l - 1))
             vec_activate(nn.a[i+1], nn.oaf);
+        else
+            vec_activate(nn.a[i+1], nn.haf);
     }
     
     return nn_output(nn);
@@ -112,9 +108,7 @@ Vec nn_forward(NN nn, Vec input)
 
 void nn_backpropagate(NN nn, Vec output)
 {
-    assert(nn.a  != NULL && nn.b  != NULL && nn.w  != NULL && "Failed to allocate memory for network");
-    assert(nn.da != NULL && "Failed to allocate memory for network");
-    assert(nn.ga != NULL && nn.gb != NULL && nn.gw != NULL && "Failed to allocate memory for network");
+    assert(nn.gc != NULL && "Please call nn_alloc() before using this function!");
     assert(nn_output(nn).c == output.c && "Network output and expected output have wrong dimensions");
 
     size_t lc, nc, pnc;
@@ -157,8 +151,7 @@ void nn_backpropagate(NN nn, Vec output)
 
 void nn_evolve(NN nn)
 {
-    assert(nn.a  != NULL && nn.b  != NULL && nn.w  != NULL && "Failed to allocate memory for network");
-    assert(nn.ga != NULL && nn.gb != NULL && nn.gw != NULL && "Failed to allocate memory for network");
+    assert(nn.gc != NULL && "Please call nn_alloc() before using this function!");
     assert(*nn.gc != 0 && "Please backpropagate network before evolving");
 
     size_t lc, nc, pnc;
@@ -181,6 +174,7 @@ void nn_evolve(NN nn)
 
 float nn_loss(NN nn, Mat training_inputs, Mat expected_outputs)
 {
+    assert(nn.gc != NULL && "Please call nn_alloc() before using this function!");
     assert(nn_input(nn).c    == training_inputs.c  && "Training data input matrix has wrong dimensions");
     assert(nn_output(nn).c   == expected_outputs.c && "Expected output matrix has wrong dimensions");
     assert(training_inputs.r == expected_outputs.r && "Training data input matrix and expected output matrix don't have the same dimensions");
@@ -219,6 +213,7 @@ void nn_free(NN nn)
     free(nn.a);
     free(nn.b);
     free(nn.w);
+    free(nn.da);
     free(nn.ga);
     free(nn.gb);
     free(nn.gw);
@@ -244,13 +239,14 @@ void nn_set_loss_functions(NN *nn, loss_function *lf, dloss_function *dlf)
 
 void nn_set_optimizer(NN nn, Optimizer o)
 {
+    assert(nn.gc != NULL && "Please call nn_alloc() before using this function!");
     *nn.o = o;
 }
 
 
 void nn_print_intern(NN nn, const char *name)
 {
-    assert(nn.a  != NULL && nn.b  != NULL && nn.w  != NULL && "Failed to allocate memory for network");
+    assert(nn.gc != NULL && "Please call nn_alloc() before using this function!");
 
     char buf[32];
     printf("%s = [\n", name);
