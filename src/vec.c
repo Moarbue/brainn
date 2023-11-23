@@ -7,7 +7,7 @@ Vec vec_alloc(bsize s)
     v.s = s;
     v.e = (bfloat*) BALLOC(v.s * sizeof (bfloat));
 
-    if (v.e == NULL) PANIC("Failed to allocate memory for vector!");
+    if (v.e == NULL) PANIC("vec_alloc(): Failed to allocate memory!");
 
     return v;
 }
@@ -21,7 +21,7 @@ void vec_fill(Vec v, bfloat value)
 
 void vec_copy(Vec dst, Vec src)
 {
-    if (dst.s != src.s) PANIC("Cannot copy vector! Destination size differs from source size!");
+    if (dst.s != src.s) PANIC("vec_copy(): Destination size differs from source size!");
 
     for (bsize i = 0; i < src.s; i++) {
         vec_el(dst, i) = vec_el(src, i);
@@ -30,7 +30,7 @@ void vec_copy(Vec dst, Vec src)
 
 void vec_sum(Vec dst, Vec v)
 {
-    if (dst.s != v.s) PANIC("Cannot sum vector! Destination size differs from source size!");
+    if (dst.s != v.s) PANIC("vec_sum(): Destination size differs from source size!");
 
     for (bsize i = 0; i < dst.s; i++) {
         vec_el(dst, i) += vec_el(v, i);

@@ -8,7 +8,7 @@ Mat mat_alloc(bsize r, bsize c)
     m.c = c;
     m.e = (bfloat*) BALLOC(r * c * sizeof (bfloat));
     
-    if (m.e == NULL) PANIC("Failed to allocate memory for matrix!");
+    if (m.e == NULL) PANIC("mat_alloc(): Failed to allocate memory!");
 
     return m;
 }
