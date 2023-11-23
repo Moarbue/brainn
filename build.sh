@@ -12,7 +12,7 @@ CFLAGS=""
 LIB_NAME=libbrainn.a
 LIB_PATH=lib
 BIN_PATH=bin
-LIBS=-lm -Llib -lbrainn
+LIBS="-lm -Llib -lbrainn"
 
 if [ "$DEBUG" = true ] ; then   CFLAGS=$CFLAGS_DEBUG
 else    CFLAGS=$CFLAGS_RELEASE
@@ -24,7 +24,10 @@ mkdir -p $LIB_PATH
 mkdir -p $BIN_PATH
 
 $CC $CFLAGS -c -o $LIB_PATH/mat.o src/mat.c
-$AR -rcs $LIB_PATH/$LIB_NAME $LIB_PATH/mat.o
-rm -rf $LIB_PATH/mat.o
+$CC $CFLAGS -c -o $LIB_PATH/vec.o src/vec.c
+
+$AR -rcs $LIB_PATH/$LIB_NAME $LIB_PATH/mat.o $LIB_PATH/vec.o
+
+rm -rf $LIB_PATH/mat.o $LIB_PATH/vec.o
 
 $CC $CFLAGS -o $BIN_PATH/logic_gates examples/logic_gates.c $LIBS
