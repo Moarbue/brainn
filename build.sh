@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DEBUG=true
+DEBUG=false
 
 AR=ar
 AR_FLAGS=-rcs
@@ -22,14 +22,18 @@ set -xe
 
 mkdir -p $LIB_PATH
 mkdir -p $BIN_PATH
+rm -rf $LIB_PATH/$LIB_NAME
 
 $CC $CFLAGS -c -o $LIB_PATH/mat.o src/mat.c
 $CC $CFLAGS -c -o $LIB_PATH/vec.o src/vec.c
 $CC $CFLAGS -c -o $LIB_PATH/vec_mat.o src/vec_mat.c
 $CC $CFLAGS -c -o $LIB_PATH/nn.o src/nn.c
+$CC $CFLAGS -c -o $LIB_PATH/loss.o src/loss.c
+$CC $CFLAGS -c -o $LIB_PATH/activation.o src/activation.c
 
-$AR -rcs $LIB_PATH/$LIB_NAME $LIB_PATH/mat.o $LIB_PATH/vec.o $LIB_PATH/vec_mat.o $LIB_PATH/nn.o
+$AR -rcs $LIB_PATH/$LIB_NAME $LIB_PATH/mat.o $LIB_PATH/vec.o $LIB_PATH/vec_mat.o $LIB_PATH/nn.o $LIB_PATH/loss.o $LIB_PATH/activation.o
 
-rm -rf $LIB_PATH/mat.o $LIB_PATH/vec.o $LIB_PATH/vec_mat.o $LIB_PATH/nn.o
+rm -rf $LIB_PATH/mat.o $LIB_PATH/vec.o $LIB_PATH/vec_mat.o $LIB_PATH/nn.o $LIB_PATH/loss.o $LIB_PATH/activation.o
 
 $CC $CFLAGS -o $BIN_PATH/logic_gates examples/logic_gates.c $LIBS
+$CC $CFLAGS -o $BIN_PATH/image_compression examples/image_compression.c $LIBS
