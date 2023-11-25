@@ -3,7 +3,7 @@
 #ifndef _BRAINN_MAT_H_
 #define _BRAINN_MAT_H_
 
-#define mat_el(m, r, c) (m).e[(r) * (m).c + (c)]
+#define mat_el(m, row, col) (m).e[(row) * (m).c + (col)]
 #define mat_print(m, pad) mat_print_intern(m, #m, pad)
 
 typedef struct {
