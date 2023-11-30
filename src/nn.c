@@ -149,7 +149,6 @@ bfloat nn_loss(NN nn, Mat training_inputs, Mat training_outputs)
         for (bsize j = 0; j < output.c; j++) {
             cost += (nn.C)(vec_el(output, j), vec_el(nn_output(nn), j));
         }
-        cost /= (bfloat)output.c;
     }
     cost /= (bfloat)samples;
 

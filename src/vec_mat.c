@@ -6,6 +6,7 @@ void vec_mat_mul(Vec dst, Vec v, Mat m)
     if (m.c != v.c)   PANIC("vec_mat_mul(): source size differs from matrix columns");
 
     for (bsize r = 0; r < m.r; r++) {
+        vec_el(dst, r) = 0;
         for (bsize c = 0; c < m.c; c++) {
             vec_el(dst, r) += mat_el(m, r, c) * vec_el(v, c);
         }

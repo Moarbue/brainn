@@ -87,7 +87,7 @@ int main(void)
     bsize layers = sizeof (arch) / sizeof (arch[0]);
 
     NN nn = nn_alloc(arch, layers);
-    nn_init(nn, 0, 0.01);
+    nn_init(nn, 0, 1);
 
     Mat data   = xnor_gate;
     bsize s    = data.r;
