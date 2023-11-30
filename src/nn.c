@@ -88,7 +88,7 @@ void nn_backpropagate(NN nn, Vec output)
     }
 
     // calculate derivative of cost function
-    N = nn.a[L].s;
+    N = nn.da[L].s;
     for (bsize n = 0; n < N; n++) {
         vec_el(nn.da[L], n) = (nn.dC)(vec_el(output, n), vec_el(nn_output(nn), n));
     }

@@ -1,11 +1,11 @@
 #!/bin/sh
 
-DEBUG=false
+DEBUG=true
 
 AR=ar
 AR_FLAGS=-rcs
 CC=gcc
-CFLAGS_DEBUG="-Wall -Wextra -O0 -ggdb -g"
+CFLAGS_DEBUG="-Wall -Wextra -O0 -ggdb3 -g"
 CFLAGS_RELEASE="-Wall -Wextra -O3"
 CFLAGS=""
 
@@ -36,4 +36,3 @@ $AR -rcs $LIB_PATH/$LIB_NAME $LIB_PATH/mat.o $LIB_PATH/vec.o $LIB_PATH/vec_mat.o
 rm -rf $LIB_PATH/mat.o $LIB_PATH/vec.o $LIB_PATH/vec_mat.o $LIB_PATH/nn.o $LIB_PATH/loss.o $LIB_PATH/activation.o
 
 $CC $CFLAGS -o $BIN_PATH/logic_gates examples/logic_gates.c $LIBS
-$CC $CFLAGS -o $BIN_PATH/image_compression examples/image_compression.c $LIBS
