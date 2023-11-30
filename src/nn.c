@@ -1,5 +1,4 @@
 #include "../include/nn.h"
-#include "../include/vec_mat.h"
 
 NN nn_alloc(bsize *arch, bsize layers)
 {
@@ -33,10 +32,10 @@ NN nn_alloc(bsize *arch, bsize layers)
     }
     *nn.gc = 0;
 
-    nn.hf  = Tanh;
-    nn.dhf = dTanh;
-    nn.of  = Tanh;
-    nn.dof = dTanh;
+    nn.hf  = Sigmoid;
+    nn.dhf = dSigmoid;
+    nn.of  = Sigmoid;
+    nn.dof = dSigmoid;
 
     nn.C   = SEL;
     nn.dC  = dSEL;
@@ -132,15 +131,17 @@ void nn_evolve(NN nn, bfloat lr)
     *nn.gc = 0;
 }
 
-bfloat nn_loss(NN nn, Vec *training_inputs, Vec *training_outputs, bsize samples)
+bfloat nn_loss(NN nn, Mat training_inputs, Mat training_outputs)
 {
     bfloat cost;
     Vec input, output;
+    bsize samples;
 
+    samples = training_inputs.r;
     cost = 0;
     for (bsize i = 0; i < samples; i++) {
-        input  = training_inputs[i];
-        output = training_outputs[i];
+        input  = mat_to_row_vec(training_inputs,  i);
+        output = mat_to_row_vec(training_outputs, i);
 
         if (output.c != nn_output(nn).c) PANIC("Network output size differs from expected output size!");
 

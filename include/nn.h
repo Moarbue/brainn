@@ -1,6 +1,7 @@
 #include "../config.h"
 #include "mat.h"
 #include "vec.h"
+#include "../include/vec_mat.h"
 #include "activation.h"
 #include "loss.h"
 
@@ -36,7 +37,7 @@ void   nn_init(NN nn, bfloat min, bfloat max);
 Vec    nn_forward(NN nn, Vec input);
 void   nn_backpropagate(NN nn, Vec output);
 void   nn_evolve(NN nn, bfloat lr);
-bfloat nn_loss(NN nn, Vec *training_inputs, Vec *training_outputs, bsize samples);
+bfloat nn_loss(NN nn, Mat training_inputs, Mat training_outputs);
 void   nn_free(NN nn);
 
 void nn_print_intern(NN nn, const char *name);
