@@ -179,6 +179,21 @@ void nn_free(NN nn)
     BFREE(nn.gc);
 }
 
+void nn_set_activation_function(NN *nn, hidden_activation hf, dhidden_activation dhf, 
+                                        output_activation of, doutput_activation dof)
+{
+    nn->hf  = hf;
+    nn->dhf = dhf;
+    nn->of  = of;
+    nn->dof = dof;
+}
+
+void nn_set_loss_function(NN *nn, loss_function C, dloss_function dC)
+{
+    nn->C  = C;
+    nn->dC = dC;
+}
+
 
 void nn_print_intern(NN nn, const char *name)
 {

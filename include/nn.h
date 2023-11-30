@@ -40,6 +40,12 @@ void   nn_evolve(NN nn, bfloat lr);
 bfloat nn_loss(NN nn, Mat training_inputs, Mat training_outputs);
 void   nn_free(NN nn);
 
+// config functions
+void nn_set_activation_function(NN *nn, hidden_activation hf, dhidden_activation dhf, 
+                                        output_activation of, doutput_activation dof);
+
+void nn_set_loss_function(NN *nn, loss_function C, dloss_function dC);
+
 void nn_print_intern(NN nn, const char *name);
 
 #endif // _BRAINN_NN_H_
