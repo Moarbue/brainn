@@ -75,7 +75,7 @@ Vec nn_forward(NN nn, Vec input)
 
 void nn_backpropagate(NN nn, Vec output)
 {
-    if (output.s != nn_output(nn).s) PANIC("Network output size differs from expected output size!");
+    if (output.c != nn_output(nn).c) PANIC("Network output size differs from expected output size!");
 
     bsize L, N, P;  // layers, neurons, neurons in previous layer
     bfloat dCo;     // derivative of Loss function in respect to neuron output
@@ -88,14 +88,14 @@ void nn_backpropagate(NN nn, Vec output)
     }
 
     // calculate derivative of cost function
-    N = nn.da[L].s;
+    N = nn.da[L].c;
     for (bsize n = 0; n < N; n++) {
         vec_el(nn.da[L], n) = (nn.dC)(vec_el(output, n), vec_el(nn_output(nn), n));
     }
 
     for (bsize l = L; l <= L; l--) {
-        N = nn.a[l+1].s;
-        P = nn.a[l].s;
+        N = nn.a[l+1].c;
+        P = nn.a[l].c;
         for (bsize n = 0; n < N; n++) { 
             dCo = vec_el(nn.da[l], n);
             doz = (l == L) ? (nn.dof)(vec_el(nn.z[l], n)) : (nn.dhf)(vec_el(nn.z[l], n));
@@ -142,13 +142,13 @@ bfloat nn_loss(NN nn, Vec *training_inputs, Vec *training_outputs, bsize samples
         input  = training_inputs[i];
         output = training_outputs[i];
 
-        if (output.s != nn_output(nn).s) PANIC("Network output size differs from expected output size!");
+        if (output.c != nn_output(nn).c) PANIC("Network output size differs from expected output size!");
 
         nn_forward(nn, input);
-        for (bsize j = 0; j < output.s; j++) {
+        for (bsize j = 0; j < output.c; j++) {
             cost += (nn.C)(vec_el(output, j), vec_el(nn_output(nn), j));
         }
-        cost /= (bfloat)output.s;
+        cost /= (bfloat)output.c;
     }
     cost /= (bfloat)samples;
 

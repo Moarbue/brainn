@@ -88,7 +88,7 @@ bfloat dlReLU(bfloat z)
 
 void vec_activate(Vec v, activation_function *af)
 {
-    for (bsize i = 0; i < v.s; i++) {
+    for (bsize i = 0; i < v.c; i++) {
         vec_el(v, i) = (*af)(vec_el(v, i));
     }
 }
