@@ -32,7 +32,7 @@ Vec  mat_to_col_vec(Mat src, bsize c)
     Vec dst;
 
     dst.c = src.r;
-    dst.s = src.c;
+    dst.s = src.c + src.s;
     dst.e = &mat_el(src, 0, c);
 
     return dst;
