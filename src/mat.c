@@ -32,6 +32,19 @@ void mat_rand(Mat m, bfloat min, bfloat max)
     }
 }
 
+void mat_shuffle_rows(Mat m)
+{
+    for (bsize r = 0; r < m.r-1; r++) 
+    {
+        size_t j = brand(r+1, m.r - r); // works only because decimals are ignored
+        for (bsize c = 0; c < m.c; c++) {
+            bfloat t = mat_el(m, j, c);
+            mat_el(m, j, c) = mat_el(m, r, c);
+            mat_el(m, r, c) = t;
+        }
+    }
+}
+
 Mat mat_sub_mat(Mat src, bsize r_start, bsize c_start, bsize r, bsize c)
 {
     if (r_start >= src.r)        PANIC("mat_sub_mat(): row index is out of bounds");

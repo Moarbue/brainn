@@ -16,7 +16,8 @@ typedef struct {
 Mat  mat_alloc(bsize r, bsize c);
 void mat_fill(Mat m, bfloat value);
 void mat_rand(Mat m, bfloat min, bfloat max);
-Mat mat_sub_mat(Mat src, bsize r_start, bsize c_start, bsize r, bsize c);
+void mat_shuffle_rows(Mat m);
+Mat  mat_sub_mat(Mat src, bsize r_start, bsize c_start, bsize r, bsize c);
 void mat_free(Mat m);
 
 void mat_print_intern(Mat m, const char *name, bsize pad);
