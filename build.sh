@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DEBUG=true
+: ${DEBUG:=true}
 
 AR=ar
 AR_FLAGS=-rcs
