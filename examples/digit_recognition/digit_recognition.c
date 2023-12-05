@@ -56,6 +56,10 @@ int main(int argc, char **argv)
         }
         printf("\n");
     }
+
+    nn_free(nn);
+    mat_free(data);
+    mat_free(eval);
 }
 
 void print_img(Vec img, bsize w, bsize h)
