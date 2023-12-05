@@ -38,6 +38,7 @@ Vec    nn_forward(NN nn, Vec input);
 void   nn_backpropagate(NN nn, Vec output);
 void   nn_evolve(NN nn, bfloat lr);
 bfloat nn_loss(NN nn, Mat training_inputs, Mat training_outputs);
+void   nn_train(NN nn, Mat ti, Mat to, bsize batch_size, bsize epochs, bfloat lr, int report_loss);
 void   nn_free(NN nn);
 
 // config functions

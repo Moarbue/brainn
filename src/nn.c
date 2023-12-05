@@ -1,4 +1,5 @@
 #include "../include/nn.h"
+#include <pthread.h>
 
 NN nn_alloc(bsize *arch, bsize layers)
 {
@@ -153,6 +154,23 @@ bfloat nn_loss(NN nn, Mat training_inputs, Mat training_outputs)
     cost /= (bfloat)samples;
 
     return cost;
+}
+
+void nn_train(NN nn, Mat ti, Mat to, bsize batch_size, bsize epochs, bfloat lr, int report_loss)
+{
+    Mat m = {.r = ti.r, .c = ti.c + to.c, .e = ti.e, .s = 0};
+
+    for (bsize e = 0; e < epochs; e++) {
+        mat_shuffle_rows(m);
+
+        for (bsize b = 0; b < batch_size; b++) {
+            nn_forward(nn, mat_to_row_vec(ti, b));
+            nn_backpropagate(nn, mat_to_row_vec(to, b));
+        }
+        nn_evolve(nn, lr);
+        if (report_loss) printf("E: %zu L: %.5f\r", e, nn_loss(nn, ti, to));
+    } 
+    if (report_loss) printf("\n");
 }
 
 void nn_free(NN nn)
