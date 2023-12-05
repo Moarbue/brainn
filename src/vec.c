@@ -22,7 +22,7 @@ void vec_fill(Vec v, bfloat value)
 
 void vec_copy(Vec dst, Vec src)
 {
-    if (dst.c != src.c) PANIC("vec_copy(): Destination size differs from source size!");
+    if (dst.c != src.c) PANIC("vec_copy(): Destination size differs from source size! %zu != %zu", dst.c, src.c);
 
     for (bsize i = 0; i < src.c; i++) {
         vec_el(dst, i) = vec_el(src, i);
@@ -31,7 +31,7 @@ void vec_copy(Vec dst, Vec src)
 
 void vec_sum(Vec dst, Vec v)
 {
-    if (dst.c != v.c) PANIC("vec_sum(): Destination size differs from source size!");
+    if (dst.c != v.c) PANIC("vec_sum(): Destination size differs from source size! %zu != %zu", dst.c, v.c);
 
     for (bsize i = 0; i < dst.c; i++) {
         vec_el(dst, i) += vec_el(v, i);

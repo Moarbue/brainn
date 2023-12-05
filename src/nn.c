@@ -74,7 +74,7 @@ Vec nn_forward(NN nn, Vec input)
 
 void nn_backpropagate(NN nn, Vec output)
 {
-    if (output.c != nn_output(nn).c) PANIC("Network output size differs from expected output size!");
+    if (output.c != nn_output(nn).c) PANIC("Network output size differs from expected output size! %zu != %zu", output.c, nn_output(nn).c);
 
     bsize L, N, P;  // layers, neurons, neurons in previous layer
     bfloat dCo;     // derivative of Loss function in respect to neuron output
@@ -143,7 +143,7 @@ bfloat nn_loss(NN nn, Mat training_inputs, Mat training_outputs)
         input  = mat_to_row_vec(training_inputs,  i);
         output = mat_to_row_vec(training_outputs, i);
 
-        if (output.c != nn_output(nn).c) PANIC("Network output size differs from expected output size!");
+        if (output.c != nn_output(nn).c) PANIC("Network output size differs from expected output size! %zu != %zu", output.c, nn_output(nn).c);
 
         nn_forward(nn, input);
         for (bsize j = 0; j < output.c; j++) {

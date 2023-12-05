@@ -47,10 +47,10 @@ void mat_shuffle_rows(Mat m)
 
 Mat mat_sub_mat(Mat src, bsize r_start, bsize c_start, bsize r, bsize c)
 {
-    if (r_start >= src.r)        PANIC("mat_sub_mat(): row index is out of bounds");
-    if (c_start >= src.c)        PANIC("mat_sub_mat(): col index is out of bounds");
-    if (r > src.r - r_start) PANIC("mat_sub_mat(): row size is greater than src size");
-    if (c > src.c - c_start) PANIC("mat_sub_mat(): col size is greater than src size");
+    if (r_start >= src.r)        PANIC("mat_sub_mat(): row index is out of bounds [%zu] > %zu", r_start, src.r);
+    if (c_start >= src.c)        PANIC("mat_sub_mat(): col index is out of bounds [%zu] > %zu", c_start, src.c);
+    if (r > src.r - r_start) PANIC("mat_sub_mat(): row size is greater than src size %zu > %zu", r, src.r - r_start);
+    if (c > src.c - c_start) PANIC("mat_sub_mat(): col size is greater than src size %zu > %zu", c, src.c - c_start);
 
     Mat dst;
 
