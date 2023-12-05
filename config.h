@@ -13,7 +13,7 @@
 #define BALLOC malloc
 #define BFREE  free
 
-#define PANIC(msg) do { printf(msg "\n"); exit(EXIT_FAILURE); } while(0)
+#define PANIC(msg, ...) do { printf(msg "\n", ##__VA_ARGS__); exit(EXIT_FAILURE); } while(0)
 
 // type of floating precision number
 typedef float bfloat;
