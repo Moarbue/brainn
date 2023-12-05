@@ -31,17 +31,7 @@ int main(int argc, char **argv)
     nn_init(nn, -1, 1);
     nn_set_activation_function(&nn, lReLU, dlReLU, Sigmoid, dSigmoid);
 
-    for (bsize e = 0; e < EPOCHS; e++) {
-        mat_shuffle_rows(data);
-
-        for (bsize b = 0; b < BATCH_SIZE; b++) {
-            nn_forward(nn, mat_to_row_vec(tinput, b));
-            nn_backpropagate(nn, mat_to_row_vec(toutput, b));
-        }
-        nn_evolve(nn, LEARNING_RATE);
-        printf("E: %zu L: %.5f\r", e, nn_loss(nn, tinput, toutput));
-    } 
-    printf("\n");
+    nn_train(nn, tinput, toutput, BATCH_SIZE, EPOCHS, LEARNING_RATE, 1);
 
     Mat eval = mnist_load(argv[3], argv[4], 1);
     Mat input  = mat_sub_mat(data, 0, 0, eval.r, IMG_RESOLUTION);

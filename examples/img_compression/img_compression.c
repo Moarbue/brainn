@@ -50,17 +50,7 @@ int main(void)
     nn_init(nn, -1, 1);
     nn_set_activation_function(&nn, lReLU, dlReLU, Sigmoid, dSigmoid);
 
-    for (bsize e = 0; e < EPOCHS; e++) {
-        mat_shuffle_rows(data);
-
-        for (bsize b = 0; b < BATCH_SIZE; b++) {
-            nn_forward(nn, mat_to_row_vec(tinput, b));
-            nn_backpropagate(nn, mat_to_row_vec(toutput, b));
-        }
-        nn_evolve(nn, LEARNING_RATE);
-        printf("E: %zu L: %.5f\r", e, nn_loss(nn, tinput, toutput));
-    } 
-    printf("\n");
+    nn_train(nn, tinput, toutput, BATCH_SIZE, EPOCHS, LEARNING_RATE, 1);
 
     img = vec_alloc(OUT_RESOLUTION);
     for (bsize i = 0; i < img.c; i++) {
