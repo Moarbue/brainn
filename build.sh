@@ -37,3 +37,4 @@ rm -rf $LIB_PATH/mat.o $LIB_PATH/vec.o $LIB_PATH/vec_mat.o $LIB_PATH/nn.o $LIB_P
 
 $CC $CFLAGS -o $BIN_PATH/logic_gates examples/logic_gates.c $LIBS
 $CC $CFLAGS -o $BIN_PATH/img_compression examples/img_compression/img_compression.c $LIBS
+$CC $CFALGS -o $BIN_PATH/digit_recognition examples/digit_recognition/digit_recognition.c examples/digit_recognition/mnist_loader.c $LIBS
