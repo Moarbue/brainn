@@ -52,7 +52,7 @@ int main(int argc, char **argv)
         print_img(mat_to_row_vec(input, r), IMG_WIDTH, IMG_HEIGHT);
 
         for (bsize i = 0; i < DIGIT_COUNT; i++) {
-            printf("%d: %.1f  ", i, vec_el(nn_output(nn), i));
+            printf("%d: %.1f%% ", i, vec_el(nn_output(nn), i) * 100.f);
         }
         printf("\n");
     }
