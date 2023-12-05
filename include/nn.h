@@ -1,7 +1,7 @@
 #include "../config.h"
 #include "mat.h"
 #include "vec.h"
-#include "../include/vec_mat.h"
+#include "vec_mat.h"
 #include "activation.h"
 #include "loss.h"
 
