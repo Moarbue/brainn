@@ -47,6 +47,8 @@ void nn_set_activation_function(NN *nn, hidden_activation hf, dhidden_activation
 
 void nn_set_loss_function(NN *nn, loss_function C, dloss_function dC);
 
+void nn_get_arch(NN nn, bsize *arch[], bsize *layers);
+
 void nn_print_intern(NN nn, const char *name);
 
 #endif // _BRAINN_NN_H_

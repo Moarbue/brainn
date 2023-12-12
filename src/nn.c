@@ -1,5 +1,4 @@
 #include "../include/nn.h"
-#include <pthread.h>
 
 NN nn_alloc(bsize *arch, bsize layers)
 {
@@ -209,6 +208,21 @@ void nn_set_loss_function(NN *nn, loss_function C, dloss_function dC)
 {
     nn->C  = C;
     nn->dC = dC;
+}
+
+void nn_get_arch(NN nn, bsize *arch[], bsize *layers)
+{
+    bsize *a, L;
+
+    L = nn.l + 1;
+    a = BALLOC(L * sizeof (bsize));
+
+    for (bsize l = 0; l < L; l++) {
+        a[l] = nn.a[l].c;
+    }
+
+    *arch   = a;
+    *layers = L;
 }
 
 
