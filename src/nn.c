@@ -157,6 +157,8 @@ bfloat nn_loss(NN nn, Mat training_inputs, Mat training_outputs)
 
 void nn_train(NN nn, Mat ti, Mat to, bsize batch_size, bsize epochs, bfloat lr, int report_loss)
 {
+    if (batch_size > ti.r) batch_size = ti.r;
+
     Mat m = {.r = ti.r, .c = ti.c + to.c, .e = ti.e, .s = 0};
 
     for (bsize e = 0; e < epochs; e++) {
