@@ -11,6 +11,7 @@
 #include <stdio.h>
 
 #define BALLOC malloc
+#define BREALLOC realloc
 #define BFREE  free
 
 #define PANIC(msg, ...) do { printf(msg "\n", ##__VA_ARGS__); exit(EXIT_FAILURE); } while(0)
