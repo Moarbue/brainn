@@ -62,6 +62,10 @@ int main(void)
     }
 
     vec_to_img(img, OUT_WIDTH, OUT_HEIGHT, OUT_PATH);
+
+    mat_free(data);
+    nn_free(nn);
+    vec_free(img);
 }
 
 Vec img_to_vec(const char *file_name, bsize *width, bsize *height)
