@@ -159,6 +159,7 @@ void nn_ptrain(NN *nn, Mat ti, Mat to, bsize batch_size, bsize epochs, bfloat lr
 
     bsize cs = ti.r / nthreads; // chunk size
     bsize r  = ti.r % nthreads; // remainder
+    batch_size /= nthreads;
     
     if (batch_size > cs) batch_size = cs;
 
