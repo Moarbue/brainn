@@ -37,14 +37,14 @@ int main(int argc, char **argv)
     Mat input  = mat_sub_mat(data, 0, 0, eval.r, IMG_RESOLUTION);
     Mat output = mat_sub_mat(data, 0, IMG_RESOLUTION, eval.r, DIGIT_COUNT);
 
-    for (bsize r = 0; r < 5; r++) {
+    for (bsize r = 0; r < 10; r++) {
         nn_forward(nn, mat_to_row_vec(input, r));
         print_img(mat_to_row_vec(input, r), IMG_WIDTH, IMG_HEIGHT);
 
         bsize expected = 0;
         for (bsize i = 0; i < DIGIT_COUNT; i++) {
             printf("%zu: %.3f%% ", i, vec_el(nn_output(nn), i) * 100.f);
-            if (vec_el(output, i) == 1.f) expected = i;
+            if (vec_el(mat_to_row_vec(output, r), i) == 1.f) expected = i;
         }
         printf("\nExpected: %zu\n", expected);
     }
