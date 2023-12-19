@@ -42,6 +42,10 @@ void   nn_train(NN nn, Mat ti, Mat to, bsize batch_size, bsize epochs, bfloat lr
 void   nn_ptrain(NN *nn, Mat ti, Mat to, bsize batch_size, bsize epochs, bfloat lr, bsize nthreads, int report_loss);
 void   nn_free(NN nn);
 
+// io functions
+void nn_save(const char *filename, NN nn);
+NN   nn_load(const char *filename);
+
 // config functions
 void nn_set_activation_function(NN *nn, hidden_activation hf, dhidden_activation dhf, 
                                         output_activation of, doutput_activation dof);
