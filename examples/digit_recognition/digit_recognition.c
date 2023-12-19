@@ -41,7 +41,7 @@ int main(int argc, char **argv)
         nn_forward(nn, mat_to_row_vec(input, r));
         print_img(mat_to_row_vec(input, r), IMG_WIDTH, IMG_HEIGHT);
 
-        bsize expected;
+        bsize expected = 0;
         for (bsize i = 0; i < DIGIT_COUNT; i++) {
             printf("%zu: %.3f%% ", i, vec_el(nn_output(nn), i) * 100.f);
             if (vec_el(output, i) == 1.f) expected = i;
