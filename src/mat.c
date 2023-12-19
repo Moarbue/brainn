@@ -56,7 +56,7 @@ Mat mat_sub_mat(Mat src, bsize r_start, bsize c_start, bsize r, bsize c)
 
     dst.r = r;
     dst.c = c;
-    dst.s = src.c - c;
+    dst.s = src.c - c + src.s;
     dst.e = &mat_el(src, r_start, c_start);
 
     return dst;
