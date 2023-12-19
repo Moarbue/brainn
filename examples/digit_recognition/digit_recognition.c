@@ -10,10 +10,10 @@ void print_img(Vec img, bsize w, bsize h);
 #define DIGIT_COUNT 10
 
 #define EPOCHS 100000
-#define BATCH_SIZE (28)
+#define BATCH_SIZE (28*28)
 #define LEARNING_RATE 1e-1
 
-bsize arch[] = {IMG_RESOLUTION, 28, 28, DIGIT_COUNT};
+bsize arch[] = {IMG_RESOLUTION, 10, 28, 28, DIGIT_COUNT};
 bsize layers = sizeof (arch) / sizeof (arch[0]);
 
 int main(int argc, char **argv)
@@ -31,7 +31,7 @@ int main(int argc, char **argv)
     nn_init(nn, -1, 1);
     nn_set_activation_function(&nn, lReLU, dlReLU, Sigmoid, dSigmoid);
 
-    nn_train(nn, tinput, toutput, BATCH_SIZE, EPOCHS, LEARNING_RATE, 1);
+    nn_ptrain(&nn, tinput, toutput, BATCH_SIZE, EPOCHS, LEARNING_RATE, 10, 1);
 
     Mat eval = mnist_load(argv[3], argv[4], 1);
     Mat input  = mat_sub_mat(data, 0, 0, eval.r, IMG_RESOLUTION);
