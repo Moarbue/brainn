@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 
     nn_ptrain(&nn, tinput, toutput, BATCH_SIZE, EPOCHS, LEARNING_RATE, 10, 1);
 
-    Mat eval = mnist_load(argv[3], argv[4], 1);
+    Mat eval   = mnist_load(argv[3], argv[4], 1);
     Mat input  = mat_sub_mat(data, 0, 0, eval.r, IMG_RESOLUTION);
     Mat output = mat_sub_mat(data, 0, IMG_RESOLUTION, eval.r, DIGIT_COUNT);
 
@@ -41,10 +41,12 @@ int main(int argc, char **argv)
         nn_forward(nn, mat_to_row_vec(input, r));
         print_img(mat_to_row_vec(input, r), IMG_WIDTH, IMG_HEIGHT);
 
+        bsize expected;
         for (bsize i = 0; i < DIGIT_COUNT; i++) {
-            printf("%d: %.1f%% ", i, vec_el(nn_output(nn), i) * 100.f);
+            printf("%zu: %.3f%% ", i, vec_el(nn_output(nn), i) * 100.f);
+            if (vec_el(output, i) == 1.f) expected = i;
         }
-        printf("\n");
+        printf("\nExpected: %zu\n", expected);
     }
 
     nn_free(nn);
