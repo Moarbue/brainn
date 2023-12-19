@@ -207,7 +207,7 @@ void nn_ptrain(NN *nn, Mat ti, Mat to, bsize batch_size, bsize epochs, bfloat lr
         pthread_cond_broadcast(&cv);
         pthread_mutex_unlock(&mut);
     }
-    printf("\n");
+    if (report_loss) printf("\n");
 
     for (bsize n = 0; n < nthreads; n++) {
         char *c;
