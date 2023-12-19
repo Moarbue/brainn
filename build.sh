@@ -31,11 +31,13 @@ $CC $CFLAGS -c -o $LIB_PATH/nn.o src/nn.c
 $CC $CFLAGS -c -o $LIB_PATH/loss.o src/loss.c
 $CC $CFLAGS -c -o $LIB_PATH/activation.o src/activation.c
 $CC $CFLAGS -c -o $LIB_PATH/nn_parallel.o src/nn_parallel.c
+$CC $CFLAGS -c -o $LIB_PATH/nn_io.o src/nn_io.c
 
-$AR -rcs $LIB_PATH/$LIB_NAME $LIB_PATH/mat.o $LIB_PATH/vec.o $LIB_PATH/vec_mat.o $LIB_PATH/nn.o $LIB_PATH/loss.o $LIB_PATH/activation.o $LIB_PATH/nn_parallel.o
+$AR -rcs $LIB_PATH/$LIB_NAME $LIB_PATH/mat.o $LIB_PATH/vec.o $LIB_PATH/vec_mat.o $LIB_PATH/nn.o $LIB_PATH/loss.o $LIB_PATH/activation.o $LIB_PATH/nn_parallel.o $LIB_PATH/nn_io.o
 
-rm -rf $LIB_PATH/mat.o $LIB_PATH/vec.o $LIB_PATH/vec_mat.o $LIB_PATH/nn.o $LIB_PATH/loss.o $LIB_PATH/activation.o $LIB_PATH/nn_parallel.o
+rm -rf $LIB_PATH/mat.o $LIB_PATH/vec.o $LIB_PATH/vec_mat.o $LIB_PATH/nn.o $LIB_PATH/loss.o $LIB_PATH/activation.o $LIB_PATH/nn_parallel.o $LIB_PATH/nn_io.o
 
 $CC $CFLAGS -o $BIN_PATH/logic_gates examples/logic_gates.c $LIBS
 $CC $CFLAGS -o $BIN_PATH/img_compression examples/img_compression/img_compression.c $LIBS
 $CC $CFALGS -o $BIN_PATH/digit_recognition examples/digit_recognition/digit_recognition.c examples/digit_recognition/mnist_loader.c $LIBS
+$CC $CFLAGS -o $BIN_PATH/io examples/save_load/save_load.c $LIBS
