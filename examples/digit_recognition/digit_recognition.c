@@ -41,21 +41,33 @@ int main(int argc, char **argv)
     nn_ptrain(&nn, tinput, toutput, BATCH_SIZE, EPOCHS, LEARNING_RATE, 16, 1);
     nn_save(argv[1], nn);
 
-    Mat eval   = mnist_load(db_paths[2], db_paths[3], 1);
+    Mat eval   = mnist_load(db_paths[0], db_paths[1], 1);
     Mat input  = mat_sub_mat(eval, 0, 0, eval.r, IMG_RESOLUTION);
     Mat output = mat_sub_mat(eval, 0, IMG_RESOLUTION, eval.r, DIGIT_COUNT);
 
-    for (bsize r = 0; r < 10; r++) {
+    bfloat accuracy = 0.f;
+
+    for (bsize r = 0; r < eval.r; r++) {
         nn_forward(nn, mat_to_row_vec(input, r));
-        print_img(mat_to_row_vec(input, r), IMG_WIDTH, IMG_HEIGHT);
 
         bsize expected = 0;
+        bsize result = 0;
+        bfloat max = 0.f;
         for (bsize i = 0; i < DIGIT_COUNT; i++) {
-            printf("%zu: %.3f%% ", i, vec_el(nn_output(nn), i) * 100.f);
             if (vec_el(mat_to_row_vec(output, r), i) == 1.f) expected = i;
+
+            if (max < vec_el(nn_output(nn), i)) {
+                max = vec_el(nn_output(nn), i);
+                result = i;
+            }
         }
-        printf("\nExpected: %zu\n", expected);
+
+        if (expected == result) accuracy++; 
     }
+
+    accuracy /= eval.r;
+    printf("NN Accuracy: %.3f\n", accuracy);
+
 
     nn_free(nn);
     mat_free(data);
