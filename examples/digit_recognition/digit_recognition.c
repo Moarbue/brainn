@@ -42,8 +42,8 @@ int main(int argc, char **argv)
     nn_save(argv[1], nn);
 
     Mat eval   = mnist_load(db_paths[2], db_paths[3], 1);
-    Mat input  = mat_sub_mat(data, 0, 0, eval.r, IMG_RESOLUTION);
-    Mat output = mat_sub_mat(data, 0, IMG_RESOLUTION, eval.r, DIGIT_COUNT);
+    Mat input  = mat_sub_mat(eval, 0, 0, eval.r, IMG_RESOLUTION);
+    Mat output = mat_sub_mat(eval, 0, IMG_RESOLUTION, eval.r, DIGIT_COUNT);
 
     for (bsize r = 0; r < 10; r++) {
         nn_forward(nn, mat_to_row_vec(input, r));
