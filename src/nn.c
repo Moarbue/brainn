@@ -16,7 +16,8 @@ NN nn_alloc(bsize *arch, bsize layers)
     nn.gw = (Mat*) BALLOC(nn.l   * sizeof (Mat));
     nn.gc = (bsize*) BALLOC(sizeof (bsize));
 
-    if (nn.a == NULL || nn.z == NULL || nn.b == NULL || nn.w == NULL) PANIC("nn_alloc(): Failed to allocate memory!");
+    if (nn.a  == NULL || nn.z  == NULL || nn.b  == NULL || nn.w  == NULL ||
+        nn.da == NULL || nn.gb == NULL || nn.gw == NULL || nn.gc == NULL) PANIC("nn_alloc(): Failed to allocate memory!");
 
     nn_input(nn) = vec_alloc(arch[0]);
     arch++;
