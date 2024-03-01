@@ -88,6 +88,7 @@ int main(void)
 
     NN nn = nn_alloc(arch, layers);
     nn_init(nn, 0, 1);
+    nn_set_optimizer(&nn, optimizer_SGD(LEARNING_RATE));
 
     Mat data   = xnor_gate;
     bsize s    = data.r;
@@ -99,7 +100,7 @@ int main(void)
             nn_forward(nn, mat_to_row_vec(input, b % s));
             nn_backpropagate(nn, mat_to_row_vec(output, b % s));
         }
-        nn_evolve(nn, LEARNING_RATE);
+        nn_evolve(nn);
         printf("E: %zu  L: %.5f\r", e, nn_loss(nn, input, output));
     }
     printf("\n");

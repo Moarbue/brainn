@@ -37,8 +37,9 @@ int main(int argc, char **argv)
     NN nn = nn_alloc(arch, layers);
     nn_init(nn, -1, 1);
     nn_set_activation_function(&nn, lReLU, dlReLU, Sigmoid, dSigmoid);
+    nn_set_optimizer(&nn, optimizer_SGD(LEARNING_RATE));
 
-    nn_ptrain(&nn, tinput, toutput, BATCH_SIZE, EPOCHS, LEARNING_RATE, 16, 1);
+    nn_ptrain(&nn, tinput, toutput, BATCH_SIZE, EPOCHS, 16, 1);
     nn_save(argv[1], nn);
 
     Mat eval   = mnist_load(db_paths[0], db_paths[1], 1);

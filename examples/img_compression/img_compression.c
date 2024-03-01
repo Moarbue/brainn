@@ -49,8 +49,9 @@ int main(void)
     NN nn = nn_alloc(arch, layers);
     nn_init(nn, -1, 1);
     nn_set_activation_function(&nn, lReLU, dlReLU, Sigmoid, dSigmoid);
+    nn_set_optimizer(&nn, optimizer_SGD(LEARNING_RATE));
 
-    nn_train(nn, tinput, toutput, BATCH_SIZE, EPOCHS, LEARNING_RATE, 1);
+    nn_train(nn, tinput, toutput, BATCH_SIZE, EPOCHS, 1);
 
     img = vec_alloc(OUT_RESOLUTION);
     for (bsize i = 0; i < img.c; i++) {
