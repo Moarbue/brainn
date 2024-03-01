@@ -137,10 +137,10 @@ void *process_batch(void *arg)
     return NULL;
 }
 
-void nn_ptrain(NN *nn, Mat ti, Mat to, bsize batch_size, bsize epochs, bfloat lr, bsize nthreads, int report_loss)
+void nn_ptrain(NN *nn, Mat ti, Mat to, bsize batch_size, bsize epochs, bsize nthreads, int report_loss)
 {
     if (nthreads == 1) {
-        nn_train(*nn, ti, to, batch_size, epochs, lr, report_loss);
+        nn_train(*nn, ti, to, batch_size, epochs, report_loss);
         return;
     }
 
@@ -200,7 +200,7 @@ void nn_ptrain(NN *nn, Mat ti, Mat to, bsize batch_size, bsize epochs, bfloat lr
         if (report_loss) printf("E: %zu L: %.5f\r", e, loss);
 
         nn_pgradient(*nn, nthreads);
-        nn_evolve(*nn, lr);
+        nn_evolve(*nn);
 
         pthread_mutex_lock(&mut);
         for (bsize n = 0; n < nthreads; n++) td[n].finished = false;

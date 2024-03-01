@@ -29,3 +29,8 @@ void nn_get_arch(NN nn, bsize *arch[], bsize *layers)
     *arch   = a;
     *layers = L;
 }
+
+void nn_set_optimizer(NN *nn, Optimizer o)
+{
+    *nn->o = o;
+}

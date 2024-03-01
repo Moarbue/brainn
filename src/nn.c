@@ -15,9 +15,11 @@ NN nn_alloc(bsize *arch, bsize layers)
     nn.gb = (Vec*) BALLOC(nn.l   * sizeof (Vec));
     nn.gw = (Mat*) BALLOC(nn.l   * sizeof (Mat));
     nn.gc = (bsize*) BALLOC(sizeof (bsize));
+    nn.o  = (Optimizer*) BALLOC(sizeof (Optimizer));
 
     if (nn.a  == NULL || nn.z  == NULL || nn.b  == NULL || nn.w  == NULL ||
-        nn.da == NULL || nn.gb == NULL || nn.gw == NULL || nn.gc == NULL) PANIC("nn_alloc(): Failed to allocate memory!");
+        nn.da == NULL || nn.gb == NULL || nn.gw == NULL || nn.gc == NULL || nn.o == NULL)
+        PANIC("nn_alloc(): Failed to allocate memory!");
 
     nn_input(nn) = vec_alloc(arch[0]);
     arch++;
@@ -40,6 +42,8 @@ NN nn_alloc(bsize *arch, bsize layers)
 
     nn.C   = SEL;
     nn.dC  = dSEL;
+
+    *nn.o  = optimizer_SGD(1e-2);
 
     return nn;
 }
@@ -112,7 +116,7 @@ void nn_backpropagate(NN nn, Vec output)
     (*nn.gc)++;
 }
 
-void nn_evolve(NN nn, bfloat lr)
+void nn_evolve(NN nn)
 {
     bsize L, N, P;  // layers, neurons, neurons in previous layer
 
@@ -121,10 +125,12 @@ void nn_evolve(NN nn, bfloat lr)
         N = nn.w[l].r;
         P = nn.w[l].c;
         for (bsize n = 0; n < N; n++) {
-            vec_el(nn.b [l], n) -= lr * vec_el(nn.gb[l], n) / (bfloat)(*nn.gc);
+            vec_el(nn.gb[l], n) /= (bfloat)(*nn.gc);
+            vec_el(nn.b [l], n)  = optimizer_update_bias(nn.o, vec_el(nn.b[l], n), vec_el(nn.gb[l], n), l, n);
             vec_el(nn.gb[l], n)  = 0;
             for (bsize p = 0; p < P; p++) {
-                mat_el(nn.w [l], n, p) -= lr * mat_el(nn.gw[l], n, p) / (bfloat)(*nn.gc);
+                mat_el(nn.gw[l], n, p) /= (bfloat)(*nn.gc);
+                mat_el(nn.w [l], n, p)  = optimizer_update_weight(nn.o, mat_el(nn.w[l], n, p), mat_el(nn.gw[l], n, p), l, n, p);
                 mat_el(nn.gw[l], n, p)  = 0;
             }
         }
@@ -156,7 +162,7 @@ bfloat nn_loss(NN nn, Mat training_inputs, Mat training_outputs)
     return cost;
 }
 
-void nn_train(NN nn, Mat ti, Mat to, bsize batch_size, bsize epochs, bfloat lr, int report_loss)
+void nn_train(NN nn, Mat ti, Mat to, bsize batch_size, bsize epochs, int report_loss)
 {
     if (batch_size > ti.r) batch_size = ti.r;
 
@@ -169,7 +175,7 @@ void nn_train(NN nn, Mat ti, Mat to, bsize batch_size, bsize epochs, bfloat lr, 
             nn_forward(nn, mat_to_row_vec(ti, b));
             nn_backpropagate(nn, mat_to_row_vec(to, b));
         }
-        nn_evolve(nn, lr);
+        nn_evolve(nn);
         if (report_loss) printf("E: %zu L: %.5f\r", e, nn_loss(nn, ti, to));
     } 
     if (report_loss) printf("\n");
@@ -188,6 +194,8 @@ void nn_free(NN nn)
         mat_free(nn.gw[l]);
     }
 
+    optimizer_free(nn.o, nn.l);
+
     BFREE(nn.a);
     BFREE(nn.z);
     BFREE(nn.b);
@@ -196,6 +204,7 @@ void nn_free(NN nn)
     BFREE(nn.gb);
     BFREE(nn.gw);
     BFREE(nn.gc);
+    BFREE(nn.o);
 }
 
 
