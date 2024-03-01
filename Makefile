@@ -10,7 +10,7 @@ LIB_PATH = lib
 BIN_PATH = bin
 SRC_PATH = src
 LIB_NAME = libbrainn.a
-LIB_OBJ  = $(LIB_PATH)/activation.o $(LIB_PATH)/loss.o $(LIB_PATH)/mat.o $(LIB_PATH)/nn_io.o $(LIB_PATH)/nn_parallel.o $(LIB_PATH)/nn.o $(LIB_PATH)/vec_mat.o $(LIB_PATH)/vec.o $(LIB_PATH)/buffer.o $(LIB_PATH)/serialization.o $(LIB_PATH)/nn_config.o
+LIB_OBJ  = $(LIB_PATH)/activation.o $(LIB_PATH)/loss.o $(LIB_PATH)/mat.o $(LIB_PATH)/nn_io.o $(LIB_PATH)/nn_parallel.o $(LIB_PATH)/nn.o $(LIB_PATH)/vec_mat.o $(LIB_PATH)/vec.o $(LIB_PATH)/buffer.o $(LIB_PATH)/serialization.o $(LIB_PATH)/nn_config.o $(LIB_PATH)/optimizer.o
 LIBS = -lm -lpthread -L$(LIB_PATH) -lbrainn
 
 EXAMPLE_DIR = examples
