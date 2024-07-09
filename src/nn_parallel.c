@@ -14,8 +14,9 @@ typedef struct {
     bool finished;
 } TData;
 
-pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t  cv  = PTHREAD_COND_INITIALIZER;
+pthread_rwlock_t rwlock = PTHREAD_RWLOCK_INITIALIZER;
+pthread_mutex_t mutex   = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t  cv      = PTHREAD_COND_INITIALIZER;
 
 void nn_palloc(NN *nn, bsize nthreads, bsize othreads)
 {
@@ -24,7 +25,7 @@ void nn_palloc(NN *nn, bsize nthreads, bsize othreads)
     bsize *arch, layers;
     nn_get_arch(*nn, &arch, &layers);
 
-    for (bsize n = 0; n < othreads; n++) {
+    for (bsize n = 1; n < othreads; n++) {
         bsize c = n * layers;
         bsize d = n * nn->l;
 
@@ -50,7 +51,7 @@ void nn_palloc(NN *nn, bsize nthreads, bsize othreads)
 
     arch++;
 
-    for (bsize n = 0; n < nthreads; n++) {
+    for (bsize n = 1; n < nthreads; n++) {
         bsize c = n * layers;
         bsize d = n * nn->l;
 
@@ -107,7 +108,7 @@ void nn_pgradient(NN nn, bsize nthreads)
 
 void *process_batch(void *arg)
 {
-    TData *td= (TData *) arg;
+    TData *td = (TData *) arg;
 
     td->nn.a  += td->i * (td->nn.l+1);
     td->nn.z  += td->i * td->nn.l;
@@ -117,6 +118,8 @@ void *process_batch(void *arg)
     td->nn.gc += td->i;
 
     for (bsize e = 0; e < td->e; e++) {
+        // perform a single forward-backward-pass
+        pthread_rwlock_rdlock(&rwlock);
 
         for (bsize b = 0; b < td->bs; b++) {
             nn_forward(td->nn, mat_to_row_vec(td->ti, b));
@@ -124,14 +127,14 @@ void *process_batch(void *arg)
         }
         
         td->l = nn_loss(td->nn, td->ti, td->to) * td->ti.r;
-
-        pthread_mutex_lock(&mut);
         td->finished = true;
-        pthread_mutex_unlock(&mut);
 
-        pthread_mutex_lock(&mut);
-        while(td->finished) pthread_cond_wait(&cv, &mut);
-        pthread_mutex_unlock(&mut);
+        pthread_rwlock_unlock(&rwlock);
+
+        // wait for main thread to finish optimizing
+        pthread_mutex_lock(&mutex);
+        while(td->finished) pthread_cond_wait(&cv, &mutex);
+        pthread_mutex_unlock(&mutex);
     }
 
     return NULL;
@@ -183,9 +186,10 @@ void nn_ptrain(NN *nn, Mat ti, Mat to, bsize batch_size, bsize epochs, bsize nth
         pthread_create(&threads[n], NULL, process_batch, (void *) &td[n]);
     }
 
-    for (bsize e = 0; e < epochs; e++) {
+    for (bsize e = 0; e < epochs+1; e++) {
         mat_shuffle_rows(m);
 
+        // wait for other threads to finish
         bool finished = false;
         while (!finished) {
             for (bsize n = 0; n < nthreads; n++) {
@@ -193,6 +197,9 @@ void nn_ptrain(NN *nn, Mat ti, Mat to, bsize batch_size, bsize epochs, bsize nth
                 if (!finished) break;
             }
         }
+
+        // optimize network
+        pthread_rwlock_wrlock(&rwlock);
 
         bfloat loss = 0.f;
         for (bsize n = 0; n < nthreads; n++) loss += td[n].l;
@@ -202,10 +209,13 @@ void nn_ptrain(NN *nn, Mat ti, Mat to, bsize batch_size, bsize epochs, bsize nth
         nn_pgradient(*nn, nthreads);
         nn_evolve(*nn);
 
-        pthread_mutex_lock(&mut);
+        pthread_rwlock_unlock(&rwlock);
+
+        // tell other networks that optimizing is finished
+        pthread_mutex_lock(&mutex);
         for (bsize n = 0; n < nthreads; n++) td[n].finished = false;
         pthread_cond_broadcast(&cv);
-        pthread_mutex_unlock(&mut);
+        pthread_mutex_unlock(&mutex);
     }
     if (report_loss) printf("\n");
 
