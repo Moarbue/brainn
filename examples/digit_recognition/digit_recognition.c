@@ -11,7 +11,7 @@ void print_img(Vec img, bsize w, bsize h);
 
 #define EPOCHS 500000
 #define BATCH_SIZE (28*28)
-#define LEARNING_RATE 1e-1
+#define LEARNING_RATE 1e-3
 
 const char *db_paths[] = {
     "examples/digit_recognition/database/train-images.idx3-ubyte",
@@ -37,7 +37,7 @@ int main(int argc, char **argv)
     NN nn = nn_alloc(arch, layers);
     nn_init(nn, -1, 1);
     nn_set_activation_function(&nn, lReLU, dlReLU, Sigmoid, dSigmoid);
-    nn_set_optimizer(&nn, optimizer_SGD(LEARNING_RATE));
+    nn_set_optimizer(&nn, optimizer_adam(LEARNING_RATE, 0.9, 0.999, nn.b, nn.w, nn.l));
 
     nn_ptrain(&nn, tinput, toutput, BATCH_SIZE, EPOCHS, 16, 1);
     nn_save(argv[1], nn);
