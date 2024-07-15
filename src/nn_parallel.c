@@ -133,7 +133,7 @@ void *process_batch(void *arg)
 
         // wait for main thread to finish optimizing
         pthread_mutex_lock(&mutex);
-        while(td->finished) pthread_cond_wait(&cv, &mutex);
+        if (td->finished) pthread_cond_wait(&cv, &mutex);
         pthread_mutex_unlock(&mutex);
     }
 
@@ -151,6 +151,10 @@ void nn_ptrain(NN *nn, Mat ti, Mat to, bsize batch_size, bsize epochs, bsize nth
 
     nn_palloc(nn, nthreads, 1);
     nn_pinit(*nn, nthreads);
+
+    pthread_attr_t attrs;
+    pthread_attr_init(&attrs);
+    pthread_attr_setdetachstate(&attrs, PTHREAD_CREATE_JOINABLE);
 
     pthread_t *threads = (pthread_t *) BALLOC(nthreads * sizeof (pthread_t));
     if (threads == NULL) PANIC("nn_ptrain(): Failed to allocate memory for threads!");
@@ -183,10 +187,10 @@ void nn_ptrain(NN *nn, Mat ti, Mat to, bsize batch_size, bsize epochs, bsize nth
             .finished = false,
         };
 
-        pthread_create(&threads[n], NULL, process_batch, (void *) &td[n]);
+        pthread_create(&threads[n], &attrs, process_batch, (void *) &td[n]);
     }
 
-    for (bsize e = 0; e < epochs+1; e++) {
+    for (bsize e = 0; e < epochs; e++) {
         mat_shuffle_rows(m);
 
         // wait for other threads to finish
@@ -204,7 +208,7 @@ void nn_ptrain(NN *nn, Mat ti, Mat to, bsize batch_size, bsize epochs, bsize nth
         bfloat loss = 0.f;
         for (bsize n = 0; n < nthreads; n++) loss += td[n].l;
         loss /= (bfloat) ti.r;
-        if (report_loss) printf("E: %zu L: %.5f\r", e, loss);
+        if (report_loss) printf("E: %zu L: %.5f\r", e+1, loss);
 
         nn_pgradient(*nn, nthreads);
         nn_evolve(*nn);
