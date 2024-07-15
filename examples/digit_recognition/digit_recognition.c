@@ -39,10 +39,10 @@ int main(int argc, char **argv)
     nn_set_activation_function(&nn, lReLU, dlReLU, Sigmoid, dSigmoid);
     nn_set_optimizer(&nn, optimizer_adam(LEARNING_RATE, 0.9, 0.999, nn.b, nn.w, nn.l));
 
-    nn_ptrain(&nn, tinput, toutput, BATCH_SIZE, EPOCHS, 16, 1);
+    nn_ptrain(&nn, tinput, toutput, BATCH_SIZE, EPOCHS, 8, 1);
     nn_save(argv[1], nn);
 
-    Mat eval   = mnist_load(db_paths[0], db_paths[1], 1);
+    Mat eval   = mnist_load(db_paths[1], db_paths[1], 1);
     Mat input  = mat_sub_mat(eval, 0, 0, eval.r, IMG_RESOLUTION);
     Mat output = mat_sub_mat(eval, 0, IMG_RESOLUTION, eval.r, DIGIT_COUNT);
 
