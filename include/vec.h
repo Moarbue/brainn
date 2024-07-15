@@ -12,11 +12,12 @@ typedef struct {
     bfloat *e;
 } Vec;
 
-Vec  vec_alloc(bsize c);
-void vec_fill(Vec v, bfloat value);
-void vec_copy(Vec dst, Vec src);
-void vec_sum(Vec dst, Vec v);
-void vec_free(Vec v);
+Vec    vec_alloc(bsize c);
+void   vec_fill(Vec v, bfloat value);
+void   vec_copy(Vec dst, Vec src);
+void   vec_sum(Vec dst, Vec v);
+bfloat vec_max(Vec v);
+void   vec_free(Vec v);
 
 void vec_print_intern(Vec v, const char *name, bsize pad);
 

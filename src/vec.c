@@ -38,6 +38,16 @@ void vec_sum(Vec dst, Vec v)
     }
 }
 
+bfloat vec_max(Vec v)
+{
+    bfloat max = vec_el(v, 0);
+    for (bsize i = 1; i < v.c; i++) {
+        if (vec_el(v, i) > max) max = vec_el(v, i);
+    }
+
+    return max;
+}
+
 void vec_free(Vec v)
 {
     BFREE(v.e);
