@@ -25,7 +25,7 @@ void ReLU(Vec z)
 void Heaviside(Vec z)
 {
     for (bsize i = 0; i < z.c; i++) {
-        vec_el(z, i) = (vec_el(z, i) > 0);
+        vec_el(z, i) = (vec_el(z, i) > 0.0);
     }
 }
 
@@ -41,14 +41,14 @@ void GELU(Vec z)
 void Softplus(Vec z)
 {
     for (bsize i = 0; i < z.c; i++) {
-        vec_el(z, i) = log(1 + exp(vec_el(z, i)));
+        vec_el(z, i) = log(1.0 + exp(vec_el(z, i)));
     }
 }
 
 void lReLU(Vec z)
 {
     for (bsize i = 0; i < z.c; i++) {
-        if (vec_el(z, i) < 0)
+        if (vec_el(z, i) < 0.0)
             vec_el(z, i) = 0.01 * vec_el(z, i);
     }
 }
@@ -71,14 +71,14 @@ void Softmax(Vec z)
 void dSigmoid(Vec z, Vec a)
 {
     for (bsize i = 0; i < z.c; i++) {
-        vec_el(z, i) = vec_el(a, i) * (1 - vec_el(a, i));
+        vec_el(z, i) = vec_el(a, i) * (1.0 - vec_el(a, i));
     }
 }
 
 void dTanh(Vec z, Vec a)
 {
     for (bsize i = 0; i < z.c; i++) {
-        vec_el(z, i) = 1 - vec_el(a, i)*vec_el(a, i);
+        vec_el(z, i) = 1.0 - vec_el(a, i)*vec_el(a, i);
     }
 }
 
@@ -86,14 +86,14 @@ void dReLU(Vec z, Vec a)
 {
     (void) a;
     for (bsize i = 0; i < z.c; i++) {
-        vec_el(z, i) = (vec_el(z, i) > 0);
+        vec_el(z, i) = (vec_el(z, i) > 0.0);
     }
 }
 
 void dHeaviside(Vec z, Vec a)
 {
     (void) a;
-    vec_fill(z, 0);
+    vec_fill(z, 0.0);
 }
 
 void dGELU(Vec z, Vec a)
@@ -128,7 +128,7 @@ void dlReLU(Vec z, Vec a)
 void dSoftmax(Vec z, Vec a)
 {
     for (bsize i = 0; i < z.c; i++) {
-        vec_el(z, i) = 0;
+        vec_el(z, i) = 0.0;
         for (bsize j = 0; j < z.c; j++) {
             vec_el(z, i) += vec_el(a, j) * ((i == j) - vec_el(a, i));
         }

@@ -47,10 +47,10 @@ void mat_shuffle_rows(Mat m)
 
 Mat mat_sub_mat(Mat src, bsize r_start, bsize c_start, bsize r, bsize c)
 {
-    if (r_start >= src.r)        PANIC("mat_sub_mat(): row index is out of bounds [%zu] > %zu", r_start, src.r);
-    if (c_start >= src.c)        PANIC("mat_sub_mat(): col index is out of bounds [%zu] > %zu", c_start, src.c);
-    if (r > src.r - r_start) PANIC("mat_sub_mat(): row size is greater than src size %zu > %zu", r, src.r - r_start);
-    if (c > src.c - c_start) PANIC("mat_sub_mat(): col size is greater than src size %zu > %zu", c, src.c - c_start);
+    if (r_start >= src.r)    PANIC("mat_sub_mat(): row index is out of bounds [" BSIZE "] > " BSIZE, r_start, src.r);
+    if (c_start >= src.c)    PANIC("mat_sub_mat(): col index is out of bounds [" BSIZE "] > " BSIZE, c_start, src.c);
+    if (r > src.r - r_start) PANIC("mat_sub_mat(): row size is greater than src size " BSIZE " > " BSIZE, r, src.r - r_start);
+    if (c > src.c - c_start) PANIC("mat_sub_mat(): col size is greater than src size " BSIZE " > " BSIZE, c, src.c - c_start);
 
     Mat dst;
 
@@ -74,7 +74,7 @@ void mat_print_intern(Mat m, const char *name, bsize pad)
     for (bsize r = 0; r < m.r; r++) {
         printf("%*s    ", (int) pad, "");
         for (bsize c = 0; c < m.c; c++) {
-            printf("%.3f ", mat_el(m, r, c));
+            printf(BFLOAT " ", mat_el(m, r, c));
         }
         printf("\n");
     }

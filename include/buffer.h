@@ -1,5 +1,4 @@
-#include <inttypes.h>
-#include <stdio.h>
+#include "../config.h"
 
 #ifndef _BRAINN_BUFFER_H_
 #define _BRAINN_BUFFER_H_

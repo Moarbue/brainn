@@ -92,7 +92,7 @@ bfloat deserialize_bfloat(Buffer *b)
 void deserialize_vec(Buffer *b, Vec *v)
 {
     bsize c = deserialize_bsize(b);
-    if (c != v->c) PANIC("deserialize_vec(): dst_vec size differs from deserialized vec %zu != %zu", v->c, c);
+    if (c != v->c) PANIC("deserialize_vec(): dst_vec size differs from deserialized vec " BSIZE " != " BSIZE, v->c, c);
 
     for (bsize i = 0; i < v->c; i++) {
         vec_el(*v, i) = deserialize_bfloat(b);
@@ -103,8 +103,8 @@ void deserialize_mat(Buffer *b, Mat *m)
 {
     bsize r = deserialize_bsize(b);
     bsize c = deserialize_bsize(b);
-    if (r != m->r) PANIC("deserialize_mat(): dst_mat rows differ from deserialized mat %zu != %zu", m->r, r);
-    if (c != m->c) PANIC("deserialize_mat(): dst_mat cols differ from deserialized mat %zu != %zu", m->c, c);
+    if (r != m->r) PANIC("deserialize_mat(): dst_mat rows differ from deserialized mat " BSIZE " != " BSIZE, m->r, r);
+    if (c != m->c) PANIC("deserialize_mat(): dst_mat cols differ from deserialized mat " BSIZE " != " BSIZE, m->c, c);
 
     for (bsize r = 0; r < m->r; r++) {
         for (bsize c = 0; c < m->c; c++) {

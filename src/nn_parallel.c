@@ -162,7 +162,7 @@ void nn_ptrain(NN *nn, Mat ti, Mat to, bsize batch_size, bsize epochs, bsize nth
     TData *td = (TData *) BALLOC(nthreads * sizeof (TData));
     if (td == NULL) PANIC("nn_ptrain(): Failed to allocate memory for training data!");
 
-    if (nthreads > ti.r) PANIC("nn_ptrain(): nthreads greater than training samples: %zu > %zu", nthreads, ti.r);
+    if (nthreads > ti.r) PANIC("nn_ptrain(): nthreads greater than training samples: " BSIZE " > " BSIZE, nthreads, ti.r);
 
     bsize cs = ti.r / nthreads; // chunk size
     bsize r  = ti.r % nthreads; // remainder
@@ -183,7 +183,7 @@ void nn_ptrain(NN *nn, Mat ti, Mat to, bsize batch_size, bsize epochs, bsize nth
             .bs = batch_size,
             .e  = epochs,
             .i  = n,
-            .l  = 0,
+            .l  = 0.0,
             .finished = false,
         };
 
@@ -205,10 +205,10 @@ void nn_ptrain(NN *nn, Mat ti, Mat to, bsize batch_size, bsize epochs, bsize nth
         // optimize network
         pthread_rwlock_wrlock(&rwlock);
 
-        bfloat loss = 0.f;
+        bfloat loss = 0.0;
         for (bsize n = 0; n < nthreads; n++) loss += td[n].l;
         loss /= (bfloat) ti.r;
-        if (report_loss) printf("E: %zu L: %.5f\r", e+1, loss);
+        if (report_loss) printf("E: " BSIZE " L: " BFLOAT "%*s\r", e+1, loss, 20, "");
 
         nn_pgradient(*nn, nthreads);
         nn_evolve(*nn);

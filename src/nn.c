@@ -146,12 +146,12 @@ bfloat nn_loss(NN nn, Mat training_inputs, Mat training_outputs)
     bsize samples;
 
     samples = training_inputs.r;
-    cost = 0;
+    cost = 0.0;
     for (bsize i = 0; i < samples; i++) {
         input  = mat_to_row_vec(training_inputs,  i);
         output = mat_to_row_vec(training_outputs, i);
 
-        if (output.c != nn_output(nn).c) PANIC("Network output size differs from expected output size! %zu != %zu", output.c, nn_output(nn).c);
+        if (output.c != nn_output(nn).c) PANIC("Network output size differs from expected output size! " BSIZE " != " BSIZE, output.c, nn_output(nn).c);
 
         nn_forward(nn, input);
         for (bsize j = 0; j < output.c; j++) {
@@ -177,7 +177,7 @@ void nn_train(NN nn, Mat ti, Mat to, bsize batch_size, bsize epochs, int report_
             nn_backpropagate(nn, mat_to_row_vec(to, b));
         }
         nn_evolve(nn);
-        if (report_loss) printf("E: %zu L: %.5f\r", e, nn_loss(nn, ti, to));
+        if (report_loss) printf("E: " BSIZE " L: " BFLOAT "%*s\r", e+1, nn_loss(nn, ti, to), 20, "");
     } 
     if (report_loss) printf("\n");
 }
@@ -214,9 +214,9 @@ void nn_print_intern(NN nn, const char *name)
     char buf[32];
     printf("%s = [\n", name);
     for (bsize i = 0; i < nn.l; i++) {
-        snprintf(buf, sizeof (buf), "w[%zu]", i);
+        snprintf(buf, sizeof (buf), "w[" BSIZE "]", i);
         mat_print_intern(nn.w[i], buf, 4);
-        snprintf(buf, sizeof (buf), "b[%zu]", i);
+        snprintf(buf, sizeof (buf), "b[" BSIZE "]", i);
         vec_print_intern(nn.b[i], buf, 4);
     }
     printf("]\n");

@@ -14,7 +14,7 @@ bfloat SGD_update_weight(SGD *sgd, bfloat w, bfloat gw)
 bfloat decay_update_bias(Decay *dec, bfloat b, bfloat gb)
 {
     dec->i++;
-    dec->lr = 1 / (1 + dec->a*dec->i) * dec->lr0;
+    dec->lr = 1.0 / (1.0 + dec->a*dec->i) * dec->lr0;
     return b - dec->lr*gb;
 }
 
@@ -65,8 +65,8 @@ bfloat adam_update_bias(Adam *ad, bfloat b, bfloat gb, bsize l, bsize c)
     vec_el(ad->mb[l], c) = ad->b1*vec_el(ad->mb[l], c) + (1.0 - ad->b1)*gb;
     vec_el(ad->vb[l], c) = ad->b2*vec_el(ad->vb[l], c) + (1.0 - ad->b2)*gb*gb;
 
-    bfloat mb = vec_el(ad->mb[l], c) / (1 - pow(ad->b1, ad->i));
-    bfloat vb = vec_el(ad->vb[l], c) / (1 - pow(ad->b2, ad->i));
+    bfloat mb = vec_el(ad->mb[l], c) / (1.0 - pow(ad->b1, ad->i));
+    bfloat vb = vec_el(ad->vb[l], c) / (1.0 - pow(ad->b2, ad->i));
 
     return b - ad->lr*mb / (1e-8 + sqrt(vb));
 }
@@ -76,8 +76,8 @@ bfloat adam_update_weight(Adam *ad, bfloat w, bfloat gw, bsize l, bsize r, bsize
     mat_el(ad->mw[l], r, c) = ad->b1*mat_el(ad->mw[l], r, c) + (1.0 - ad->b1)*gw;
     mat_el(ad->vw[l], r, c) = ad->b2*mat_el(ad->vw[l], r, c) + (1.0 - ad->b2)*gw*gw;
 
-    bfloat mw = mat_el(ad->mw[l], r, c) / (1 - pow(ad->b1, ad->i));
-    bfloat vw = mat_el(ad->vw[l], r, c) / (1 - pow(ad->b2, ad->i));
+    bfloat mw = mat_el(ad->mw[l], r, c) / (1.0 - pow(ad->b1, ad->i));
+    bfloat vw = mat_el(ad->vw[l], r, c) / (1.0 - pow(ad->b2, ad->i));
 
     return w - ad->lr*mw / (1e-8 + sqrt(vw));
 }

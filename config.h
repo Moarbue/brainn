@@ -18,8 +18,12 @@
 
 // type of floating precision number
 typedef float bfloat;
+// printf format string
+#define BFLOAT "%.5f"
 // type of unsigned integer
 typedef size_t bsize;
+// printf format string
+#define BSIZE "%zu"
 
 // random function
 static inline bfloat brand(bfloat min, bfloat max)

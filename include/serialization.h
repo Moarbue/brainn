@@ -1,8 +1,8 @@
+#include "../config.h"
 #include "buffer.h"
 #include "vec.h"
 #include "mat.h"
 #include "nn.h"
-#include "../config.h"
 
 #ifndef _BRAINN_SERIALIZATION_H_
 #define _BRAINN_SERIALIZATION_H_
