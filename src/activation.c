@@ -1,94 +1,136 @@
 #include "../include/activation.h"
 #include <math.h>
 
-bfloat Sigmoid(bfloat z)
+void Sigmoid(Vec z)
 {
-    return 1.f / (1.f + expf(-z));
+    for (bsize i = 0; i < z.c; i++) {
+        vec_el(z, i) = 1.0 / (1.0 + exp(-vec_el(z, i)));
+    }
 }
 
-bfloat Tanh(bfloat z)
+void Tanh(Vec z)
 {
-    return tanhf(z);
+    for (bsize i = 0; i < z.c; i++) {
+        vec_el(z, i) = tanh(vec_el(z, i));
+    }
 }
 
-bfloat ReLU(bfloat z)
+void ReLU(Vec z)
 {
-    return fmaxf(0, z);
+    for (bsize i = 0; i < z.c; i++) {
+        vec_el(z, i) = fmax(0, vec_el(z, i));
+    }
 }
 
-bfloat Heaviside(bfloat z)
+void Heaviside(Vec z)
 {
-    return (z > 0);
+    for (bsize i = 0; i < z.c; i++) {
+        vec_el(z, i) = (vec_el(z, i) > 0);
+    }
 }
 
-bfloat GELU(bfloat z)
+void GELU(Vec z)
 {
-    static const bfloat SQRT2 = 1.41421356237f;
+    static const bfloat SQRT2 = 1.41421356237;
 
-    return 0.5f * z * (1 + erff(z / SQRT2));
+    for (bsize i = 0; i < z.c; i++) {
+        vec_el(z, i) = 0.5 * vec_el(z, i) * (1.0 + erf(vec_el(z, i) / SQRT2));
+    }
 }
 
-bfloat Softplus(bfloat z)
+void Softplus(Vec z)
 {
-    return logf(1 + expf(z));
+    for (bsize i = 0; i < z.c; i++) {
+        vec_el(z, i) = log(1 + exp(vec_el(z, i)));
+    }
 }
 
-bfloat lReLU(bfloat z)
+void lReLU(Vec z)
 {
-    if (z < 0) return 0.01f * z;
-
-    return z;
+    for (bsize i = 0; i < z.c; i++) {
+        if (vec_el(z, i) < 0)
+            vec_el(z, i) = 0.01 * vec_el(z, i);
+    }
 }
 
-
-bfloat dSigmoid(bfloat z)
+void Softmax(Vec z)
 {
-    bfloat a = Sigmoid(z);
+    bfloat D = -vec_max(z);
 
-    return a * (1 - a);
-}
+    bfloat s = 0.0;
+    for (bsize i = 0; i < z.c; i++) {
+        s += exp(vec_el(z, i) + D);
+    }
 
-bfloat dTanh(bfloat z)
-{
-    bfloat a = Tanh(z);
-
-    return 1 - a*a;
-}
-
-bfloat dReLU(bfloat z)
-{
-    return (z > 0);
-}
-
-bfloat dHeaviside(bfloat z)
-{
-    (void) z;
-    return 0;
-}
-
-bfloat dGELU(bfloat z)
-{
-    static const bfloat SQRTPI = 1.77245385091f;
-
-    return 2.f / SQRTPI * expf(-z*z);
-}
-
-bfloat dSoftplus(bfloat z)
-{
-    return Sigmoid(z);
-}
-
-bfloat dlReLU(bfloat z)
-{
-    if (z < 0) return 0.01f;
-
-    return 1;
+    for (bsize i = 0; i < z.c; i++) {
+        vec_el(z, i) = exp(vec_el(z, i) + D) / s;
+    }
 }
 
 
-void vec_activate(Vec v, activation_function *af)
+void dSigmoid(Vec z, Vec a)
 {
-    for (bsize i = 0; i < v.c; i++) {
-        vec_el(v, i) = (*af)(vec_el(v, i));
+    for (bsize i = 0; i < z.c; i++) {
+        vec_el(z, i) = vec_el(a, i) * (1 - vec_el(a, i));
+    }
+}
+
+void dTanh(Vec z, Vec a)
+{
+    for (bsize i = 0; i < z.c; i++) {
+        vec_el(z, i) = 1 - vec_el(a, i)*vec_el(a, i);
+    }
+}
+
+void dReLU(Vec z, Vec a)
+{
+    (void) a;
+    for (bsize i = 0; i < z.c; i++) {
+        vec_el(z, i) = (vec_el(z, i) > 0);
+    }
+}
+
+void dHeaviside(Vec z, Vec a)
+{
+    (void) a;
+    vec_fill(z, 0);
+}
+
+void dGELU(Vec z, Vec a)
+{
+    static const bfloat SQRTPI = 1.77245385091;
+
+    (void) a;
+
+    for (bsize i = 0; i < z.c; i++) {
+        vec_el(z, i) = 2.0 / SQRTPI * exp(-vec_el(z, i) * vec_el(z, i));
+    }
+}
+
+void dSoftplus(Vec z, Vec a)
+{
+    (void) a;
+    Sigmoid(z);
+}
+
+void dlReLU(Vec z, Vec a)
+{
+    (void) a;
+
+    for (bsize i = 0; i < z.c; i++) {
+        if (vec_el(z, i) < 0)
+            vec_el(z, i) = 0.01;
+        else
+            vec_el(z, i) = 1.0;
+    }
+}
+
+void dSoftmax(Vec z, Vec a)
+{
+    for (bsize i = 0; i < z.c; i++) {
+        vec_el(z, i) = 0;
+        for (bsize j = 0; j < z.c; j++) {
+            vec_el(z, i) += vec_el(a, j) * ((i == j) - vec_el(a, i));
+        }
     }
 }

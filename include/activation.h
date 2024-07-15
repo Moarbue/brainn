@@ -4,28 +4,27 @@
 #ifndef _BRAINN_ACTIVATION_H_
 #define _BRAINN_ACTIVATION_H_
 
-typedef bfloat (activation_function)(bfloat);
-typedef bfloat (hidden_activation) (bfloat);
-typedef bfloat (dhidden_activation)(bfloat);
-typedef bfloat (output_activation) (bfloat);
-typedef bfloat (doutput_activation)(bfloat);
+typedef void (hidden_activation) (Vec z);
+typedef void (dhidden_activation)(Vec z, Vec a);
+typedef void (output_activation) (Vec z);
+typedef void (doutput_activation)(Vec z, Vec a);
 
-bfloat Sigmoid(bfloat z);
-bfloat Tanh(bfloat z);
-bfloat ReLU(bfloat z);
-bfloat Heaviside(bfloat z);
-bfloat GELU(bfloat z);
-bfloat Softplus(bfloat z);
-bfloat lReLU(bfloat z);
+void Sigmoid(Vec z);
+void Tanh(Vec z);
+void ReLU(Vec z);
+void Heaviside(Vec z);
+void GELU(Vec z);
+void Softplus(Vec z);
+void lReLU(Vec z);
+void Softmax(Vec z);
 
-bfloat dSigmoid(bfloat z);
-bfloat dTanh(bfloat z);
-bfloat dReLU(bfloat z);
-bfloat dHeaviside(bfloat z);
-bfloat dGELU(bfloat z);
-bfloat dSoftplus(bfloat z);
-bfloat dlReLU(bfloat z);
-
-void vec_activate(Vec v, activation_function *af);
+void dSigmoid(Vec z, Vec a);
+void dTanh(Vec z, Vec a);
+void dReLU(Vec z, Vec a);
+void dHeaviside(Vec z, Vec a);
+void dGELU(Vec z, Vec a);
+void dSoftplus(Vec z, Vec a);
+void dlReLU(Vec z, Vec a);
+void dSoftmax(Vec z, Vec a);
 
 #endif // _BRAINN_ACTIVATION_H_
