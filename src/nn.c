@@ -70,8 +70,8 @@ Vec nn_forward(NN nn, Vec input)
         vec_sum(nn.a[l+1], nn.b[l]);
         vec_copy(nn.z[l], nn.a[l+1]);
         
-        if ((l+1) == nn.l) vec_activate(nn.a[l+1], nn.of);
-        else               vec_activate(nn.a[l+1], nn.hf);
+        if ((l+1) == nn.l) (nn.of)(nn.a[l+1]);
+        else               (nn.hf)(nn.a[l+1]);
     }
 
     return nn_output(nn);
@@ -100,9 +100,10 @@ void nn_backpropagate(NN nn, Vec output)
     for (bsize l = L; l <= L; l--) {
         N = nn.a[l+1].c;
         P = nn.a[l].c;
+        if (l == L) (nn.dof)(nn.z[l], nn.a[l+1]); else (nn.dhf)(nn.z[l], nn.a[l+1]);
         for (bsize n = 0; n < N; n++) { 
             dCo = vec_el(nn.da[l], n);
-            doz = (l == L) ? (nn.dof)(vec_el(nn.z[l], n)) : (nn.dhf)(vec_el(nn.z[l], n));
+            doz = vec_el(nn.z[l], n);
 
             vec_el(nn.gb[l], n) += dCo * doz;
             for (bsize p = 0; p < P; p++) {
