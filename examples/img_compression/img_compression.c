@@ -48,7 +48,7 @@ int main(void)
 
     NN nn = nn_alloc(arch, layers);
     nn_init(nn, -1, 1);
-    nn_set_activation_function(&nn, lReLU, dlReLU, Sigmoid, dSigmoid);
+    nn_set_activation_function(&nn, lReLU, dlReLU, GELU, dGELU);
     nn_set_optimizer(&nn, optimizer_SGD(LEARNING_RATE));
 
     nn_train(nn, tinput, toutput, BATCH_SIZE, EPOCHS, 1);
