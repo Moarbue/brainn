@@ -9,7 +9,7 @@ void print_img(Vec img, bsize w, bsize h);
 #define IMG_RESOLUTION (IMG_WIDTH*IMG_HEIGHT)
 #define DIGIT_COUNT 10
 
-#define EPOCHS 500000
+#define EPOCHS 500
 #define BATCH_SIZE (28*28)
 #define LEARNING_RATE 1e-3
 
@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     nn_ptrain(&nn, tinput, toutput, BATCH_SIZE, EPOCHS, 8, 1);
     nn_save(argv[1], nn);
 
-    Mat eval   = mnist_load(db_paths[1], db_paths[1], 1);
+    Mat eval   = mnist_load(db_paths[2], db_paths[3], 1);
     Mat input  = mat_sub_mat(eval, 0, 0, eval.r, IMG_RESOLUTION);
     Mat output = mat_sub_mat(eval, 0, IMG_RESOLUTION, eval.r, DIGIT_COUNT);
 
